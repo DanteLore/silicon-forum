@@ -8,11 +8,16 @@ class Agent:
         self.name: str = config["name"]
         self.model: str = config["model"]
         self.color: str = config.get("color", "white")
-        self.personality: str = config["personality"].strip()
+
+        system_prompt = "\n\n".join(filter(None, [
+            config.get("personality", "").strip(),
+            config.get("position", "").strip(),
+            config.get("instructions", "").strip(),
+        ]))
 
         self._client = OpenAI(base_url=OLLAMA_BASE_URL, api_key="ollama")
         self._history: list[dict] = [
-            {"role": "system", "content": self.personality}
+            {"role": "system", "content": system_prompt}
         ]
 
     def chat(self, message: str) -> str:
@@ -28,4 +33,4 @@ class Agent:
         return reply
 
     def reset(self):
-        self._history = [{"role": "system", "content": self.personality}]
+        self._history = [self._history[0]]
