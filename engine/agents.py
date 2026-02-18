@@ -74,6 +74,68 @@ class Agent:
         raw = self.chat(prompt, json_mode=True)
         return _parse_json(raw)
 
+    def _extract_verdict_json(self, names: list[str]) -> dict:
+        """Ask the model to emit a structured verdict dict, retrying on bad output.
+
+        Up to 3 attempts. Each retry tells the model exactly which field was wrong.
+        If all attempts fail, falls back to deriving the winner from scores (or a
+        safe placeholder) so the caller always receives a usable dict.
+        """
+        example = (
+            f'{{"winner": "{names[0]}", '
+            f'"scores": {{"{names[0]}": 8, "{names[1]}": 6}}}}'
+        )
+        base_prompt = (
+            f"Now express that verdict as a JSON object. "
+            f"Output only the JSON — no other text — in exactly this format:\n"
+            f"{example}\n"
+            f'The "winner" must be exactly {names[0]!r} or {names[1]!r}. '
+            f'The "scores" dict must contain entries for both names. '
+            f"All scores must be whole numbers between 0 and 10. "
+            f"The winner must be the debater with the higher score."
+        )
+
+        result: dict = {}
+        for attempt in range(3):
+            if attempt == 0:
+                prompt = base_prompt
+            else:
+                problems = []
+                if result.get("winner") not in names:
+                    problems.append(
+                        f'"winner" must be {names[0]!r} or {names[1]!r}, '
+                        f'got {result.get("winner")!r}'
+                    )
+                for n in names:
+                    if n not in result.get("scores", {}):
+                        problems.append(f'"scores" is missing an entry for {n!r}')
+                prompt = (
+                    f"Your previous response had problems: {'; '.join(problems)}. "
+                    f"Return ONLY a JSON object in exactly this format:\n{example}"
+                )
+
+            try:
+                raw = self.chat(prompt, json_mode=True)
+                result = _parse_json(raw)
+            except Exception:
+                result = {}
+                continue
+
+            if (result.get("winner") in names
+                    and all(n in result.get("scores", {}) for n in names)):
+                return result
+
+        # Fallback: derive winner from whatever scores we have
+        scores = result.get("scores", {})
+        if all(n in scores for n in names):
+            result["winner"] = max(names, key=lambda n: scores.get(n, 0))
+        else:
+            result.setdefault("winner", names[0])
+            result.setdefault("scores", {n: 5 for n in names})
+        print(f"Warning: judge {self.name!r} produced a malformed verdict after 3 attempts; "
+              f"using fallback (winner={result['winner']!r})")
+        return result
+
     def verdict(self, names: list[str], premise: str = None,
                 sides: dict = None) -> dict:
         """Return {"winner": str, "scores": {name: int, ...}, "reasoning": str}."""
@@ -98,14 +160,7 @@ class Agent:
         )
 
         # Call 2 — extract structure from the deliberation; enforce score consistency
-        raw = self.chat(
-            f"Now express that verdict as a JSON object in exactly this format:\n"
-            f'{{"winner": "{names[0]}", "scores": {{"{names[0]}": 8, "{names[1]}": 6}}}}\n'
-            "All scores must be whole numbers between 0 and 10 inclusive. "
-            "The winner must be the debater with the higher score.",
-            json_mode=True,
-        )
-        result = _parse_json(raw)
+        result = self._extract_verdict_json(names)
 
         # Call 3 — public announcement in character, shown in the verdict box
         result["reasoning"] = self.chat(
