@@ -8,6 +8,7 @@ class Agent:
         self.name: str = config["name"]
         self.model: str = config["model"]
         self.color: str = config.get("color", "white")
+        self.personality: str = config.get("personality", "").strip()
 
         system_prompt = "\n\n".join(filter(None, [
             config.get("personality", "").strip(),

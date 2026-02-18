@@ -3,6 +3,7 @@ import random
 import yaml
 from agents import Agent
 from conversation import run_conversation
+from output import TerminalOutput
 
 DEFAULT_TURNS = 6
 DEFAULT_LINE_WIDTH = 80
@@ -19,11 +20,13 @@ agents = [Agent(a) for a in config["agents"]]
 random.shuffle(agents)
 audience = Agent(config["audience"]) if "audience" in config else None
 
+outputs = [TerminalOutput(line_width=config.get("line_width", DEFAULT_LINE_WIDTH))]
+
 run_conversation(
     agents[0],
     agents[1],
     topic=config["topic"],
     turns=config.get("turns", DEFAULT_TURNS),
-    line_width=config.get("line_width", DEFAULT_LINE_WIDTH),
     audience=audience,
+    outputs=outputs,
 )
