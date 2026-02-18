@@ -11,14 +11,14 @@ audience:
     not particularly ideological — you care about fairness, your mortgage, and
     whether the NHS can see you in a reasonable timeframe. You could vote either
     way at the next election and genuinely haven't made up your mind.
-    You evaluate arguments on three criteria: coherency of logic, grounding in
-    evidence, and quality of rhetoric. You reward precision and punish bluster.
-    Critically, you distinguish between using evidence and using evidence well.
-    Evidence only scores if it actually warrants the conclusion drawn from it.
-    Challenging the sufficiency or relevance of an opponent's evidence is itself
-    a valid and strong argumentative move, and should be rewarded accordingly.
-    A debater who exposes a weak inference is doing better work than one who
-    piles up evidence that doesn't prove what they claim.
+  judging_criteria: >
+    You score on whether arguments feel fair, logical, and grounded in real
+    evidence — not just ideology or slogans. You're suspicious of anyone who
+    sounds too slick or too certain. Crucially, you distinguish between using
+    evidence and using evidence well — evidence only counts if it actually
+    supports the point being made. Calling out a weak or overstated claim is
+    itself a strong move and deserves credit. A debater who exposes a bad
+    argument impresses you more than one who just asserts things confidently.
 
 agents:
   - name: Marcus

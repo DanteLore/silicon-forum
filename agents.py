@@ -12,6 +12,7 @@ class Agent:
         system_prompt = "\n\n".join(filter(None, [
             config.get("personality", "").strip(),
             config.get("position", "").strip(),
+            config.get("judging_criteria", "").strip(),
             config.get("instructions", "").strip(),
         ]))
 
@@ -42,8 +43,10 @@ class Agent:
 
     def score(self, speaker_name: str) -> str:
         return self.chat(
-            f"Now score {speaker_name}'s argument. Give a mark out of 10 followed by "
-            "a single sentence explaining your reasoning."
+            f"Now give your current running score for {speaker_name} out of 10. "
+            "This is a cumulative score reflecting their whole performance so far — "
+            "revise it up if they've strengthened their case, or down if they've been "
+            "rebutted or contradicted. State the score and one sentence explaining any change."
         )
 
     def verdict(self, names: list[str]) -> str:
