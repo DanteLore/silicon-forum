@@ -33,6 +33,9 @@ class SummaryHtml:
         premise: str | None,
         premise_upheld: bool | None,
         first_speaker: str | None = None,
+        model_for: str | None = None,
+        model_against: str | None = None,
+        model_judge: str | None = None,
     ):
         self.rows.append({
             "run_num":             run_num,
@@ -45,6 +48,9 @@ class SummaryHtml:
             "premise":             premise,
             "premise_upheld":      premise_upheld,
             "first_speaker":       first_speaker,
+            "model_for":           model_for,
+            "model_against":       model_against,
+            "model_judge":         model_judge,
         })
         self._flush()
 

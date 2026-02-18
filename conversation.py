@@ -34,11 +34,13 @@ def run_conversation(
          participants=[agent_a.name, agent_b.name],
          colors=color_map,
          personalities={a.name: a.personality for a in [agent_a, agent_b]},
+         models={a.name: a.model for a in [agent_a, agent_b]},
          judge={
              "name": audience.name,
              "color": audience.color,
              "personality": audience.personality,
              "judging_criteria": audience.judging_criteria,
+             "model": audience.model,
          } if audience else None)
 
     for agent in (agent_a, agent_b):

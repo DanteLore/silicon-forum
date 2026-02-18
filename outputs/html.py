@@ -67,23 +67,26 @@ class HtmlOutput:
                 for name, col in event.metadata["colors"].items()
             }
             personalities = event.metadata.get("personalities", {})
+            models = event.metadata.get("models", {})
             sides = event.metadata.get("sides", {})
             self._participants = [
                 {
-                    "name": name,
+                    "name":  name,
                     "color": self._colors.get(name, "#666"),
-                    "bio": personalities.get(name, ""),
-                    "side": sides.get(name),
+                    "bio":   personalities.get(name, ""),
+                    "side":  sides.get(name),
+                    "model": models.get(name, ""),
                 }
                 for name in event.metadata["participants"]
             ]
             judge_meta = event.metadata.get("judge")
             if judge_meta:
                 self._judge = {
-                    "name": judge_meta["name"],
-                    "color": _css(judge_meta["color"]),
-                    "bio": judge_meta.get("personality", ""),
+                    "name":     judge_meta["name"],
+                    "color":    _css(judge_meta["color"]),
+                    "bio":      judge_meta.get("personality", ""),
                     "criteria": judge_meta.get("judging_criteria", ""),
+                    "model":    judge_meta.get("model", ""),
                 }
 
         elif event.type == EventType.PLAN:

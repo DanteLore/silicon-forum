@@ -6,6 +6,7 @@ from datetime import datetime
 import yaml
 from agents import Agent
 from conversation import run_conversation
+from ollama import list_models
 from outputs import stats as stats_mod
 from outputs.collector import ResultCollector
 from outputs.console import TerminalOutput
@@ -19,15 +20,28 @@ parser = argparse.ArgumentParser(description="Run multiple debates and collect r
 parser.add_argument("config", help="Path to the debate config YAML")
 parser.add_argument("count", type=int, nargs="?", default=5,
                     help="Number of debate runs (default: 5)")
+parser.add_argument("--model", default=None,
+                    help="Force all agents to use this Ollama model (default: random per agent)")
 args = parser.parse_args()
 
 with open(args.config, "r") as f:
     config = yaml.safe_load(f)
 
+_available_models: list[str] = []
+if not args.model:
+    _available_models = list_models()
+    if not _available_models:
+        print("Warning: no models found in Ollama — using model from YAML config")
+
+
 def _pick(cfg_list, side=None):
     cfg = dict(random.choice(cfg_list))
     if side is not None:
         cfg["side"] = side
+    if args.model:
+        cfg["model"] = args.model
+    elif _available_models:
+        cfg["model"] = random.choice(_available_models)
     return Agent(cfg)
 
 
@@ -36,7 +50,13 @@ timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 summary_path = f"results/{config_stem}_summary_{timestamp}.html"
 summary = SummaryHtml(summary_path, title=config.get("topic", config_stem))
 
-print(f"Running {args.count} debate(s) from {args.config}")
+if args.model:
+    print(f"Running {args.count} debate(s) from {args.config}  [model: {args.model}]")
+elif _available_models:
+    print(f"Running {args.count} debate(s) from {args.config}  "
+          f"[random model from {len(_available_models)} installed]")
+else:
+    print(f"Running {args.count} debate(s) from {args.config}")
 print(f"Summary: {summary_path}\n")
 
 for run_num in range(1, args.count + 1):
@@ -72,9 +92,6 @@ for run_num in range(1, args.count + 1):
         outputs=outputs,
     )
 
-    agent_for     = debater_for.name
-    agent_against = debater_against.name
-
     # transcript_filename is relative — both files live in results/
     transcript_filename = os.path.basename(html_path)
 
@@ -83,12 +100,15 @@ for run_num in range(1, args.count + 1):
         winner=collector.winner,
         scores=collector.scores,
         transcript_filename=transcript_filename,
-        agent_for=agent_for,
-        agent_against=agent_against,
+        agent_for=debater_for.name,
+        agent_against=debater_against.name,
         judge=collector.judge,
         premise=collector.premise,
         premise_upheld=collector.premise_upheld,
         first_speaker=first_speaker,
+        model_for=debater_for.model,
+        model_against=debater_against.model,
+        model_judge=audience.model if audience else None,
     )
 
     print(f"\nTranscript: {html_path}")
@@ -126,6 +146,28 @@ if s["judges"]:
         else:
             bias_str = "—"
         print(f"  {j['name']:<20} {j['n']:>3}  {j['upheld']:>6}  {j['rejected']:>8}  {rate_str:>7}  {bias_str:>6}")
+    print()
+
+if s["model_debaters"]:
+    print("  MODEL PERFORMANCE (as debater)")
+    print(f"  {'Model':<30} {'n':>3}  {'Wins':>4}  {'Win%':>5}  {'Avg score':>9}")
+    for m in s["model_debaters"]:
+        win_pct = f"{m['win_rate']:.0%}"  if m["win_rate"]  is not None else "—"
+        avg     = f"{m['avg_score']}"     if m["avg_score"] is not None else "—"
+        print(f"  {m['name']:<30} {m['n']:>3}  {m['wins']:>4}  {win_pct:>5}  {avg:>9}")
+    print()
+
+if s["model_judges"]:
+    print("  MODEL PERFORMANCE (as judge)")
+    print(f"  {'Model':<30} {'n':>3}  {'Upheld':>6}  {'Rejected':>8}  {'Uphold%':>7}  {'Bias':>6}")
+    for j in s["model_judges"]:
+        rate_str = f"{j['uphold_rate']:.0%}" if j["uphold_rate"] is not None else "—"
+        if j["bias"] is not None:
+            sign = "+" if j["bias"] >= 0 else ""
+            bias_str = f"{sign}{j['bias']:.0%}"
+        else:
+            bias_str = "—"
+        print(f"  {j['name']:<30} {j['n']:>3}  {j['upheld']:>6}  {j['rejected']:>8}  {rate_str:>7}  {bias_str:>6}")
     print()
 
 if s["order"]:

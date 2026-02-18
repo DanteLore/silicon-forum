@@ -50,6 +50,7 @@ class TerminalOutput:
         sides = event.metadata.get("sides", {})
         participants = event.metadata["participants"]
         personalities = event.metadata.get("personalities", {})
+        models = event.metadata.get("models", {})
         judge_meta = event.metadata.get("judge")
         sep = Style.BRIGHT + "=" * 60 + Style.RESET_ALL
         print(f"\n{sep}")
@@ -60,19 +61,22 @@ class TerminalOutput:
             color = self._colors.get(name, Fore.WHITE)
             side = sides.get(name)
             role = "For" if side == "for" else "Against" if side == "against" else name
-            self._print_profile(role, name, color, personalities.get(name, ""))
+            self._print_profile(role, name, color, personalities.get(name, ""),
+                                model=models.get(name))
         if judge_meta:
             name = judge_meta["name"]
             color = self._colors.get(name, Fore.WHITE)
             self._print_profile("Judge", name, color,
                                 judge_meta.get("personality", ""),
-                                judge_meta.get("judging_criteria", ""))
+                                judge_meta.get("judging_criteria", ""),
+                                model=judge_meta.get("model"))
         print(f"{sep}\n")
 
-    def _print_profile(self, role: str, name: str, color, *texts: str):
+    def _print_profile(self, role: str, name: str, color, *texts: str, model: str = None):
         indent = " " * (len(role) + 2)
         wrap_width = max(self.line_width - len(indent), 20)
-        print(f"{Style.BRIGHT}{role}:{Style.RESET_ALL} {color}{name}{Style.RESET_ALL}")
+        model_tag = f"  {Style.DIM}[{model}]{Style.RESET_ALL}" if model else ""
+        print(f"{Style.BRIGHT}{role}:{Style.RESET_ALL} {color}{name}{Style.RESET_ALL}{model_tag}")
         for text in filter(None, texts):
             for line in textwrap.wrap(" ".join(text.split()), width=wrap_width):
                 print(f"{Style.DIM}{indent}{line}{Style.RESET_ALL}")
