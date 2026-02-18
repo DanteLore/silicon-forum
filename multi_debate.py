@@ -23,6 +23,13 @@ args = parser.parse_args()
 with open(args.config, "r") as f:
     config = yaml.safe_load(f)
 
+def _pick(cfg_list, side=None):
+    cfg = dict(random.choice(cfg_list))
+    if side is not None:
+        cfg["side"] = side
+    return Agent(cfg)
+
+
 config_stem = os.path.splitext(os.path.basename(args.config))[0]
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 summary_path = f"results/{config_stem}_summary_{timestamp}.html"
@@ -36,9 +43,12 @@ for run_num in range(1, args.count + 1):
     print(f"  RUN {run_num} of {args.count}")
     print(f"{'=' * 60}\n")
 
-    agents = [Agent(a) for a in config["agents"]]
-    random.shuffle(agents)
-    audience = Agent(config["audience"]) if "audience" in config else None
+    debater_for     = _pick(config["for"],      side="for")
+    debater_against = _pick(config["against"],  side="against")
+    audience        = _pick(config["audience"]) if "audience" in config else None
+
+    debaters = [debater_for, debater_against]
+    random.shuffle(debaters)
 
     run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     html_path = f"results/{config_stem}_{run_timestamp}.html"
@@ -51,8 +61,8 @@ for run_num in range(1, args.count + 1):
     ]
 
     run_conversation(
-        agents[0],
-        agents[1],
+        debaters[0],
+        debaters[1],
         topic=config["topic"],
         premise=config.get("premise"),
         turns=config.get("turns", DEFAULT_TURNS),
@@ -60,8 +70,8 @@ for run_num in range(1, args.count + 1):
         outputs=outputs,
     )
 
-    agent_for = next((a.name for a in agents if a.side == "for"), None)
-    agent_against = next((a.name for a in agents if a.side == "against"), None)
+    agent_for     = debater_for.name
+    agent_against = debater_against.name
 
     # transcript_filename is relative — both files live in results/
     transcript_filename = os.path.basename(html_path)

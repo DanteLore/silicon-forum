@@ -20,9 +20,19 @@ args = parser.parse_args()
 with open(args.config, "r") as f:
     config = yaml.safe_load(f)
 
-agents = [Agent(a) for a in config["agents"]]
-random.shuffle(agents)
-audience = Agent(config["audience"]) if "audience" in config else None
+def _pick(cfg_list, side=None):
+    cfg = dict(random.choice(cfg_list))
+    if side is not None:
+        cfg["side"] = side
+    return Agent(cfg)
+
+
+debater_for     = _pick(config["for"],      side="for")
+debater_against = _pick(config["against"],  side="against")
+audience        = _pick(config["audience"]) if "audience" in config else None
+
+debaters = [debater_for, debater_against]
+random.shuffle(debaters)
 
 config_stem = os.path.splitext(os.path.basename(args.config))[0]
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -34,8 +44,8 @@ outputs = [
 ]
 
 run_conversation(
-    agents[0],
-    agents[1],
+    debaters[0],
+    debaters[1],
     topic=config["topic"],
     premise=config.get("premise"),
     turns=config.get("turns", DEFAULT_TURNS),
