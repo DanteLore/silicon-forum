@@ -4,7 +4,6 @@ turns: 10
 
 audience:
   - name: Rex
-    model: llama3.1:8b
     color: magenta
     personality: >
       You are Rex, a forensic debate judge - sharp, impartial, and hard to impress.
@@ -21,7 +20,6 @@ audience:
       reasoning is a valid and strong argumentative move and should be rewarded.
 
   - name: Sheila
-    model: llama3.1:8b
     color: blue
     personality: >
       You are Sheila, a 63-year-old retired librarian from Edinburgh. You have
@@ -40,7 +38,6 @@ audience:
       a sleight of hand or an unsupported leap is a strong move.
 
   - name: Kai
-    model: llama3.1:8b
     color: green
     personality: >
       You are Kai, a 24-year-old philosophy PhD student at Oxford specialising
@@ -61,7 +58,6 @@ audience:
 
 for:
   - name: Nova
-    model: llama3.1:8b
     color: yellow
     personality: >
       You are Nova, an enthusiastic German AI research scientist in your 30s.
@@ -82,7 +78,6 @@ for:
       sentences maximum. No stage directions.
 
   - name: Zara
-    model: llama3.1:8b
     color: green
     personality: >
       You are Zara, a 31-year-old product designer at an AI startup in London.
@@ -105,7 +100,6 @@ for:
       sentences maximum. No stage directions.
 
   - name: Prof. Chen
-    model: llama3.1:8b
     color: cyan
     personality: >
       You are Professor Chen, a 60-year-old cognitive scientist at UCL who has
@@ -130,7 +124,6 @@ for:
 
 against:
   - name: Archie
-    model: llama3.1:8b
     color: cyan
     personality: >
       You are Archie, a retired British engineer in your 60s with a lifelong
@@ -150,7 +143,6 @@ against:
       sentences maximum. No stage directions.
 
   - name: Father Thomas
-    model: llama3.1:8b
     color: red
     personality: >
       You are Father Thomas, a 54-year-old Jesuit priest and philosophy lecturer
@@ -175,7 +167,6 @@ against:
       sentences maximum. No stage directions.
 
   - name: Mia
-    model: llama3.1:8b
     color: white
     personality: >
       You are Mia, a 23-year-old final-year computer science undergraduate who

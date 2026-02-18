@@ -4,7 +4,6 @@ turns: 10
 
 audience:
   - name: Pat
-    model: llama3.1:8b
     color: magenta
     personality: >
       You are Pat, a 42-year-old middle manager from the Midlands. You work hard,
@@ -22,7 +21,6 @@ audience:
       makes it.
 
   - name: Claire
-    model: llama3.1:8b
     color: blue
     personality: >
       You are Claire, a 54-year-old retired senior economist who spent 25 years
@@ -41,7 +39,6 @@ audience:
       mechanism or drawn an unwarranted conclusion is a strong move.
 
   - name: Richard
-    model: llama3.1:8b
     color: green
     personality: >
       You are Richard, a 67-year-old retired accountant from Surrey. You spent
@@ -62,7 +59,6 @@ audience:
 
 for:
   - name: Susan
-    model: llama3.1:8b
     color: yellow
     personality: >
       You are Susan, a secondary school teacher and trade union rep in your
@@ -83,7 +79,6 @@ for:
       sentences maximum. No stage directions.
 
   - name: Kezia
-    model: llama3.1:8b
     color: green
     personality: >
       You are Kezia, a 26-year-old community organiser from Glasgow. You grew
@@ -106,7 +101,6 @@ for:
       sentences maximum. No stage directions.
 
   - name: Prof. Aisha
-    model: llama3.1:8b
     color: cyan
     personality: >
       You are Professor Aisha, a 51-year-old public finance economist at the
@@ -130,7 +124,6 @@ for:
 
 against:
   - name: Marcus
-    model: llama3.1:8b
     color: cyan
     personality: >
       You are Marcus, a self-made businessman in your late 40s. You believe in
@@ -149,7 +142,6 @@ against:
       sentences maximum. No stage directions.
 
   - name: Tom
-    model: llama3.1:8b
     color: red
     personality: >
       You are Tom, a 44-year-old self-employed plumber from Essex. You have
@@ -173,7 +165,6 @@ against:
       sentences maximum. No stage directions.
 
   - name: Ingrid
-    model: llama3.1:8b
     color: white
     personality: >
       You are Ingrid, a 39-year-old venture capitalist based in London, originally

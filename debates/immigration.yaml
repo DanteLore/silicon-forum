@@ -4,7 +4,6 @@ turns: 10
 
 audience:
   - name: Keiko
-    model: llama3.1:8b
     color: magenta
     personality: >
       You are Keiko, a Japanese-born professor of political economy at Sciences Po
@@ -24,7 +23,6 @@ audience:
       an opponent's evidence or argument is a strong and legitimate move.
 
   - name: Barry
-    model: llama3.1:8b
     color: blue
     personality: >
       You are Barry, a 57-year-old retired postal worker from Sunderland. You
@@ -44,7 +42,6 @@ audience:
       Catching someone out in an overstated or dishonest claim is a strong move.
 
   - name: Rosa
-    model: llama3.1:8b
     color: green
     personality: >
       You are Rosa, a 45-year-old Portuguese-born community development worker
@@ -67,7 +64,6 @@ audience:
 
 for:
   - name: Amara
-    model: llama3.1:8b
     color: yellow
     personality: >
       You are Amara, a British-Ghanaian labour economist in your early 40s,
@@ -91,7 +87,6 @@ for:
       sentences maximum. No stage directions.
 
   - name: Priya
-    model: llama3.1:8b
     color: green
     personality: >
       You are Priya, a 27-year-old junior doctor working in an NHS hospital in
@@ -113,7 +108,6 @@ for:
       sentences maximum. No stage directions.
 
   - name: Henri
-    model: llama3.1:8b
     color: cyan
     personality: >
       You are Henri, a 56-year-old French restaurateur who has run a brasserie
@@ -138,7 +132,6 @@ for:
 
 against:
   - name: Lars
-    model: llama3.1:8b
     color: cyan
     personality: >
       You are Lars, a Swedish political economist in your mid-50s at Uppsala
@@ -165,7 +158,6 @@ against:
       sentences maximum. No stage directions.
 
   - name: Diane
-    model: llama3.1:8b
     color: red
     personality: >
       You are Diane, a 52-year-old classroom assistant and school governor from
@@ -193,7 +185,6 @@ against:
       sentences maximum. No stage directions.
 
   - name: Viktor
-    model: llama3.1:8b
     color: white
     personality: >
       You are Viktor, a 41-year-old electrician from Lodz who came to the UK

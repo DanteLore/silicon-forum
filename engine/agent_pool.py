@@ -3,6 +3,8 @@ import random
 from .agents import Agent
 from .ollama import list_models
 
+DEFAULT_MODEL = "llama3.1:8b"
+
 
 def setup_model_selection(fixed_model: str | None) -> list[str]:
     """Query Ollama for available models unless a fixed model is specified.
@@ -14,16 +16,16 @@ def setup_model_selection(fixed_model: str | None) -> list[str]:
         return []
     available = list_models()
     if not available:
-        print("Warning: no models found in Ollama — using model from YAML config")
+        print(f"Warning: no models found in Ollama — falling back to {DEFAULT_MODEL}")
     return available
 
 
 def make_picker(fixed_model: str | None, available_models: list[str]):
     """Return a _pick(cfg_list, side=None) -> Agent closure.
 
-    Each call picks a random persona from cfg_list and overrides the model field
-    with either the fixed model (--model flag) or a random choice from the
-    available models list.
+    Each call picks a random persona from cfg_list and assigns a model:
+    the fixed model (--model flag), a random choice from available Ollama
+    models, or DEFAULT_MODEL as a last resort.
     """
     def _pick(cfg_list: list[dict], side: str | None = None) -> Agent:
         cfg = dict(random.choice(cfg_list))
@@ -33,5 +35,7 @@ def make_picker(fixed_model: str | None, available_models: list[str]):
             cfg["model"] = fixed_model
         elif available_models:
             cfg["model"] = random.choice(available_models)
+        else:
+            cfg["model"] = DEFAULT_MODEL
         return Agent(cfg)
     return _pick

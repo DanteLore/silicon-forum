@@ -4,7 +4,6 @@ turns: 10
 
 audience:
   - name: Miriam
-    model: llama3.1:8b
     color: magenta
     personality: >
       You are Miriam, a retired federal judge in your early 70s. You spent four
@@ -24,7 +23,6 @@ audience:
       argument - of either kind - is a strong move and deserves credit.
 
   - name: Marcus
-    model: llama3.1:8b
     color: blue
     personality: >
       You are Marcus, a 34-year-old Black elementary school teacher from Atlanta.
@@ -45,7 +43,6 @@ audience:
       engage with the real-world stakes is a strong move.
 
   - name: Sandy
-    model: llama3.1:8b
     color: green
     personality: >
       You are Sandy, a 61-year-old rancher from rural Montana. You own several
@@ -66,7 +63,6 @@ audience:
 
 for:
   - name: Elena
-    model: llama3.1:8b
     color: green
     personality: >
       You are Elena, a Finnish criminologist and public health researcher in
@@ -86,7 +82,6 @@ for:
       sentences maximum. No stage directions.
 
   - name: Dr. Kenji
-    model: llama3.1:8b
     color: yellow
     personality: >
       You are Dr. Kenji, a 43-year-old emergency medicine physician at a trauma
@@ -110,7 +105,6 @@ for:
       sentences maximum. No stage directions.
 
   - name: Caitlin
-    model: llama3.1:8b
     color: cyan
     personality: >
       You are Caitlin, a 24-year-old graduate student and gun control advocate.
@@ -134,7 +128,6 @@ for:
 
 against:
   - name: Dale
-    model: llama3.1:8b
     color: cyan
     personality: >
       You are Dale, a retired Texas county sheriff in your mid-60s. You have
@@ -156,7 +149,6 @@ against:
       sentences maximum. No stage directions.
 
   - name: Maria
-    model: llama3.1:8b
     color: red
     personality: >
       You are Maria, a 41-year-old single mother from Houston. Three years ago
@@ -179,7 +171,6 @@ against:
       sentences maximum. No stage directions.
 
   - name: Prof. James
-    model: llama3.1:8b
     color: white
     personality: >
       You are Professor James, a 57-year-old constitutional law professor at
