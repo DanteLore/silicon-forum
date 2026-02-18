@@ -87,16 +87,34 @@ class Agent:
                     lines.append(f'  {name} argued {label} the premise: "{premise}"')
             if lines:
                 context = "The debate premise was:\n" + "\n".join(lines) + "\n\n"
-        prompt = (
+
+        # Call 1 — private deliberation; persona can come through freely
+        deliberation = self.chat(
             f"{context}"
-            f"The debate is over. Give final scores and declare a winner. "
-            f"Respond with a JSON object in exactly this format:\n"
-            f'{{"winner": "{names[0]}", "scores": {{"{names[0]}": 8, "{names[1]}": 6}}, '
-            f'"reasoning": "2-3 sentences explaining why the winner won."}}\n'
-            "All scores must be whole numbers between 0 and 10 inclusive."
+            f"The debate is over. As {self.name}, privately weigh up what you just heard. "
+            f"Who made the stronger case and why? Which specific arguments or moments "
+            f"swayed you, and which fell flat? Give each debater a score out of 10 "
+            f"and decide on a winner. Be specific and think as yourself."
         )
-        raw = self.chat(prompt, json_mode=True)
-        return _parse_json(raw)
+
+        # Call 2 — extract structure from the deliberation; enforce score consistency
+        raw = self.chat(
+            f"Now express that verdict as a JSON object in exactly this format:\n"
+            f'{{"winner": "{names[0]}", "scores": {{"{names[0]}": 8, "{names[1]}": 6}}}}\n'
+            "All scores must be whole numbers between 0 and 10 inclusive. "
+            "The winner must be the debater with the higher score.",
+            json_mode=True,
+        )
+        result = _parse_json(raw)
+
+        # Call 3 — public announcement in character, shown in the verdict box
+        result["reasoning"] = self.chat(
+            f"Now deliver your verdict to the debaters and audience. Speak as {self.name} "
+            f"— briefly, in your own voice. State who won, what they did well, "
+            f"and what let the other side down. No more than a short paragraph."
+        )
+        result["deliberation"] = deliberation   # returned for THINK emission
+        return result
 
     def think(self, opponent_message: str) -> str:
         prompt = (

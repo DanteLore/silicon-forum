@@ -155,31 +155,62 @@ The score must be a whole number between 0 and 10 inclusive.
 
 ---
 
-## Stage 5 — Final verdict (judge only)
+## Stage 5 — Final verdict (judge only, three calls)
 
-Called once after all turns are complete.
+Called once after all turns are complete. Three sequential LLM calls on the judge.
 
-**Prompt sent to judge** (`json_mode=True`):
+### 5a. Private deliberation
+
+**Prompt sent to judge** (free text, no JSON constraint):
 ```
 The debate premise was:
   {A.name} argued FOR the premise: "{premise}"
   {B.name} argued AGAINST the premise: "{premise}"
 
-The debate is over. Give final scores and declare a winner.
-Respond with a JSON object in exactly this format:
-{"winner": "{A.name}", "scores": {"{A.name}": 8, "{B.name}": 6},
-"reasoning": "2-3 sentences explaining why the winner won."}
-All scores must be whole numbers between 0 and 10 inclusive.
+The debate is over. As {judge.name}, privately weigh up what you just heard.
+Who made the stronger case and why? Which specific arguments or moments swayed
+you, and which fell flat? Give each debater a score out of 10 and decide on a
+winner. Be specific and think as yourself.
 ```
 
 > The premise context block is only included when a `premise` is defined in the config.
-> The example in the format template always shows A as winner with the higher score —
-> this is just an example but may subtly bias output order.
 
-**Returns:** `{"winner": str, "scores": {name: int, ...}, "reasoning": str}`
+**Returns:** in-character deliberation text — emitted as a `THINK` event for the judge
+(shown dimmed in output, before the verdict box)
+
+### 5b. JSON extraction
+
+**Prompt sent to judge** (`json_mode=True`):
+```
+Now express that verdict as a JSON object in exactly this format:
+{"winner": "{A.name}", "scores": {"{A.name}": 8, "{B.name}": 6}}
+All scores must be whole numbers between 0 and 10 inclusive.
+The winner must be the debater with the higher score.
+```
+
+**Returns:** `{"winner": str, "scores": {name: int, ...}}`
+
+> The winner-must-have-higher-score constraint is enforced here, which prevents the
+> inconsistency where the declared winner had a lower score than their opponent.
+> No `reasoning` field is requested — that comes from 5a and 5c instead.
+
+### 5c. Public announcement
+
+**Prompt sent to judge** (free text, no JSON constraint):
+```
+Now deliver your verdict to the debaters and audience. Speak as {judge.name}
+— briefly, in your own voice. State who won, what they did well, and what let
+the other side down. No more than a short paragraph.
+```
+
+**Returns:** in-character public verdict — used as the `reasoning` field displayed
+in the verdict box
+
+---
 
 The system then derives `premise_upheld` from `sides[winner]` — if the winner argued FOR
-the premise, it is upheld; if AGAINST, it is rejected. This is emitted as a `VERDICT` event.
+the premise, it is upheld; if AGAINST, it is rejected. The THINK event (deliberation) is
+emitted first, then the `VERDICT` event (public announcement + winner + scores).
 
 ---
 
@@ -221,7 +252,9 @@ B.respond()            TURN event — B's final statement (turn 6)
 J.evaluate(B, msg)     THINK event
 J.score(B, first=False) SCORE event
 
-J.verdict()            VERDICT event — winner, final scores, reasoning
+J.verdict() call 1     THINK event  — judge's private deliberation, in character
+J.verdict() call 2     (no event)   — JSON extraction: winner + scores
+J.verdict() call 3     VERDICT event — judge's public announcement, in character
 ```
 
 **Total LLM calls for turns=6 with a judge:**
@@ -229,9 +262,9 @@ J.verdict()            VERDICT event — winner, final scores, reasoning
 - 1 opening call
 - 5 × 2 think+respond calls = 10 debater calls
 - 6 evaluate + 6 score calls = 12 judge calls
-- 1 verdict call
+- 3 verdict calls (deliberation, JSON extraction, public announcement)
 
-**= 26 LLM calls total**
+**= 28 LLM calls total**
 
 ---
 

@@ -82,6 +82,9 @@ def run_conversation(
             if winner_side:
                 premise_upheld = (winner_side == "for")
 
+        if result.get("deliberation"):
+            emit(EventType.THINK, audience.name, result["deliberation"])
+
         emit(EventType.VERDICT, audience.name, result.get("reasoning", ""),
              winner=winner, scores=result.get("scores", {}),
              premise=premise, premise_upheld=premise_upheld)
