@@ -50,36 +50,32 @@ class TerminalOutput:
         sides = event.metadata.get("sides", {})
         participants = event.metadata["participants"]
         personalities = event.metadata.get("personalities", {})
+        judge_meta = event.metadata.get("judge")
         sep = Style.BRIGHT + "=" * 60 + Style.RESET_ALL
         print(f"\n{sep}")
         print(f"{Style.BRIGHT}Topic:{Style.RESET_ALL} {topic}")
         if premise:
             print(f"{Style.BRIGHT}Premise:{Style.RESET_ALL} {premise}")
-        names = " and ".join(
-            f"{self._colors.get(n, Fore.WHITE)}{n}{Style.RESET_ALL}"
-            for n in participants
-        )
-        print(f"{Style.BRIGHT}Participants:{Style.RESET_ALL} {names}")
         for name in participants:
             color = self._colors.get(name, Fore.WHITE)
             side = sides.get(name)
-            side_label = f"  [{Style.BRIGHT}{'FOR' if side == 'for' else 'AGAINST'}{Style.RESET_ALL}{Style.DIM}]{Style.RESET_ALL}" if side else ""
-            bio = personalities.get(name, "")
-            prefix = f"{color}{Style.DIM}{name}:{Style.RESET_ALL}{side_label}"
-            if bio:
-                leader_width = len(name) + 2
-                indent = " " * leader_width
-                wrap_width = self.line_width - leader_width
-                first_line = True
-                for line in textwrap.wrap(" ".join(bio.split()), width=wrap_width):
-                    if first_line:
-                        print(f"{Style.DIM}{prefix} {line}{Style.RESET_ALL}")
-                        first_line = False
-                    else:
-                        print(f"{Style.DIM}{indent}{line}{Style.RESET_ALL}")
-            elif side:
-                print(f"{Style.DIM}{prefix}{Style.RESET_ALL}")
+            role = "For" if side == "for" else "Against" if side == "against" else name
+            self._print_profile(role, name, color, personalities.get(name, ""))
+        if judge_meta:
+            name = judge_meta["name"]
+            color = self._colors.get(name, Fore.WHITE)
+            self._print_profile("Judge", name, color,
+                                judge_meta.get("personality", ""),
+                                judge_meta.get("judging_criteria", ""))
         print(f"{sep}\n")
+
+    def _print_profile(self, role: str, name: str, color, *texts: str):
+        indent = " " * (len(role) + 2)
+        wrap_width = max(self.line_width - len(indent), 20)
+        print(f"{Style.BRIGHT}{role}:{Style.RESET_ALL} {color}{name}{Style.RESET_ALL}")
+        for text in filter(None, texts):
+            for line in textwrap.wrap(" ".join(text.split()), width=wrap_width):
+                print(f"{Style.DIM}{indent}{line}{Style.RESET_ALL}")
 
     def _print_thought(self, name: str, content: str, color):
         prefix = f"{color}{Style.DIM}[{name} thinks]{Style.RESET_ALL}"

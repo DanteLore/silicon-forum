@@ -18,6 +18,7 @@ class Agent:
         self.model: str = config["model"]
         self.color: str = config.get("color", "white")
         self.personality: str = config.get("personality", "").strip()
+        self.judging_criteria: str = config.get("judging_criteria", "").strip()
         self.side: str | None = config.get("side")   # "for" | "against" | None
 
         system_prompt = "\n\n".join(filter(None, [

@@ -10,11 +10,14 @@ class ResultCollector:
         self.premise: str | None = None
         self.premise_upheld: bool | None = None
         self.sides: dict = {}
+        self.judge: str | None = None
 
     def __call__(self, event: DebateEvent):
         if event.type == EventType.HEADER:
             self.sides = event.metadata.get("sides", {})
             self.premise = event.metadata.get("premise")
+            judge_meta = event.metadata.get("judge")
+            self.judge = judge_meta["name"] if judge_meta else None
         elif event.type == EventType.VERDICT:
             self.winner = event.metadata.get("winner")
             self.scores = event.metadata.get("scores", {})

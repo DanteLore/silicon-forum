@@ -83,6 +83,7 @@ for run_num in range(1, args.count + 1):
         transcript_filename=transcript_filename,
         agent_for=agent_for,
         agent_against=agent_against,
+        judge=collector.judge,
         premise=collector.premise,
         premise_upheld=collector.premise_upheld,
     )

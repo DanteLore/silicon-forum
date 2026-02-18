@@ -33,7 +33,13 @@ def run_conversation(
     emit(EventType.HEADER, topic=topic, premise=premise, sides=sides,
          participants=[agent_a.name, agent_b.name],
          colors=color_map,
-         personalities={a.name: a.personality for a in [agent_a, agent_b]})
+         personalities={a.name: a.personality for a in [agent_a, agent_b]},
+         judge={
+             "name": audience.name,
+             "color": audience.color,
+             "personality": audience.personality,
+             "judging_criteria": audience.judging_criteria,
+         } if audience else None)
 
     for agent in (agent_a, agent_b):
         emit(EventType.PLAN, agent.name, agent.plan(topic))

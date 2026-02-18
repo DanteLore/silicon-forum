@@ -51,6 +51,7 @@ class HtmlOutput:
         self._premise: str | None = None
         self._participants: list[dict] = []   # {name, color, bio, side}
         self._colors: dict[str, str] = {}     # name -> CSS color
+        self._judge: dict | None = None
         self._events: list[dict] = []
         self._verdict: dict | None = None
         self._template = _env.get_template("debate.html")
@@ -76,6 +77,14 @@ class HtmlOutput:
                 }
                 for name in event.metadata["participants"]
             ]
+            judge_meta = event.metadata.get("judge")
+            if judge_meta:
+                self._judge = {
+                    "name": judge_meta["name"],
+                    "color": _css(judge_meta["color"]),
+                    "bio": judge_meta.get("personality", ""),
+                    "criteria": judge_meta.get("judging_criteria", ""),
+                }
 
         elif event.type == EventType.PLAN:
             self._events.append({"type": "plan", "speaker": event.speaker,
@@ -120,6 +129,7 @@ class HtmlOutput:
             topic=self._topic,
             premise=self._premise,
             participants=self._participants,
+            judge=self._judge,
             colors=self._colors,
             events=self._events,
             verdict=self._verdict,

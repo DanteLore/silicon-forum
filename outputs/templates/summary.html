@@ -104,7 +104,6 @@ tbody td {
 .col-run    { width: 44px; color: #aaa; font-size: 13px; }
 .col-winner { font-weight: 500; color: #222; }
 .col-scores { font-size: 13px; white-space: nowrap; }
-.col-premise { font-style: italic; font-size: 13px; color: #888; }
 
 /* ── Badges ──────────────────────────────────────────── */
 .badge {
@@ -150,7 +149,6 @@ a.transcript-link:hover { color: #5694f1; text-decoration: underline; }
 @media (max-width: 600px) {
     .page { padding: 0 20px 60px; }
     .site-nav-inner { padding: 0 20px; }
-    .col-premise { display: none; }
 }
 </style>
 </head>
@@ -176,19 +174,23 @@ a.transcript-link:hover { color: #5694f1; text-decoration: underline; }
     <thead>
       <tr>
         <th class="col-run">#</th>
-        <th>Winner</th>
-        <th>Scores</th>
         <th>For</th>
         <th>Against</th>
-        <th class="col-premise">Premise</th>
+        <th>Judge</th>
+        <th>Winner</th>
+        <th>Scores</th>
         <th>Result</th>
-        <th>Transcript</th>
+        <th>Link</th>
       </tr>
     </thead>
     <tbody>
       {% for row in rows %}
       <tr>
         <td class="col-run">{{ row.run_num }}</td>
+
+        <td>{{ row.agent_for or "—" }}</td>
+        <td>{{ row.agent_against or "—" }}</td>
+        <td>{{ row.judge or "—" }}</td>
 
         <td class="col-winner">{{ row.winner or "—" }}</td>
 
@@ -198,11 +200,6 @@ a.transcript-link:hover { color: #5694f1; text-decoration: underline; }
           {% endfor %}
           {% if not row.scores %}—{% endif %}
         </td>
-
-        <td>{{ row.agent_for or "—" }}</td>
-        <td>{{ row.agent_against or "—" }}</td>
-
-        <td class="col-premise">{{ row.premise or "—" }}</td>
 
         <td>
           {% if row.premise_upheld is not none %}

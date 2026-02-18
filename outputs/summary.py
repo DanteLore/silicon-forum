@@ -27,6 +27,7 @@ class SummaryHtml:
         transcript_filename: str,
         agent_for: str | None,
         agent_against: str | None,
+        judge: str | None,
         premise: str | None,
         premise_upheld: bool | None,
     ):
@@ -37,6 +38,7 @@ class SummaryHtml:
             "transcript_filename": transcript_filename,
             "agent_for": agent_for,
             "agent_against": agent_against,
+            "judge": judge,
             "premise": premise,
             "premise_upheld": premise_upheld,
         })
