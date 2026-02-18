@@ -1,4 +1,4 @@
-from events import DebateEvent, EventType
+from engine.events import DebateEvent, EventType
 
 
 class ResultCollector:

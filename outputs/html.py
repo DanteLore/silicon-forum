@@ -3,7 +3,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from markupsafe import Markup, escape
 
-from events import DebateEvent, EventType
+from engine.events import DebateEvent, EventType
 
 # Colorama color names mapped to values that read well on a white background
 _CSS_COLOR = {

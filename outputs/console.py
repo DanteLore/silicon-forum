@@ -1,6 +1,6 @@
 import textwrap
 from colorama import Fore, Style, init as colorama_init
-from events import DebateEvent, EventType
+from engine.events import DebateEvent, EventType
 
 colorama_init()
 

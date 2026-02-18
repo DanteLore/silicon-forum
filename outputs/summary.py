@@ -13,7 +13,7 @@ _env = Environment(
 
 
 class SummaryHtml:
-    """Accumulates per-run results and writes a summary HTML table after each run."""
+    """Accumulates per-run result rows and rewrites the summary HTML after each run."""
 
     def __init__(self, path: str, title: str = ""):
         self._path = Path(path)
@@ -21,38 +21,12 @@ class SummaryHtml:
         self.rows: list[dict] = []
         self._template = _env.get_template("summary.html")
 
-    def add_row(
-        self,
-        run_num: int,
-        winner: str | None,
-        scores: dict,
-        transcript_filename: str,
-        agent_for: str | None,
-        agent_against: str | None,
-        judge: str | None,
-        premise: str | None,
-        premise_upheld: bool | None,
-        first_speaker: str | None = None,
-        model_for: str | None = None,
-        model_against: str | None = None,
-        model_judge: str | None = None,
-    ):
-        self.rows.append({
-            "run_num":             run_num,
-            "winner":              winner,
-            "scores":              scores,
-            "transcript_filename": transcript_filename,
-            "agent_for":           agent_for,
-            "agent_against":       agent_against,
-            "judge":               judge,
-            "premise":             premise,
-            "premise_upheld":      premise_upheld,
-            "first_speaker":       first_speaker,
-            "model_for":           model_for,
-            "model_against":       model_against,
-            "model_judge":         model_judge,
-        })
+    def add_row(self, row: dict) -> None:
+        self.rows.append(row)
         self._flush()
+
+    def finalize(self) -> None:
+        pass  # already flushed incrementally after each add_row
 
     def _flush(self):
         self._path.parent.mkdir(parents=True, exist_ok=True)
