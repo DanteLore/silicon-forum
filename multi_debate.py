@@ -103,7 +103,7 @@ def main():
     print(f"Output:  {run_dir}/\n")
 
     stats_outputs = [
-        SummaryHtml(summary_path, title=config.get("topic", config_stem)),
+        SummaryHtml(summary_path, title=config.get("premise", config.get("topic", config_stem))),
         SummaryCsv(csv_path),
         TerminalStats(),
     ]

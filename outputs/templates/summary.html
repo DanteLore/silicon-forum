@@ -218,11 +218,9 @@ a.transcript-link:hover { color: #5694f1; text-decoration: underline; }
 <div class="page">
 
   <header class="page-header">
-    <h1>Results: {{ title }}</h1>
+    <h1>Debate Premise: {{ title }}</h1>
     <div class="subtitle">{{ rows | length }} debate{{ 's' if rows | length != 1 else '' }} recorded</div>
-    {% if rows and rows[0].premise %}
-    <div class="premise-text">Premise: {{ rows[0].premise }}</div>
-    {% endif %}
+
   </header>
 
   <table>

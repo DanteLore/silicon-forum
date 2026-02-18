@@ -1,6 +1,6 @@
 topic: "Whether the wealthy should pay a higher rate of tax than everyone else"
 premise: "The wealthy should pay a higher rate of tax than everyone else"
-turns: 10
+turns: 6
 
 audience:
   - name: Pat
