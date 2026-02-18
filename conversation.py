@@ -25,6 +25,12 @@ def run_conversation(
 
     _print_header(topic, agent_a, agent_b, color_map)
 
+    for agent in (agent_a, agent_b):
+        plan = agent.plan(topic)
+        _print_plan(agent.name, plan, color_map, line_width)
+
+    print(f"{Style.BRIGHT}{'— ' * 30}{Style.RESET_ALL}\n")
+
     # Seed the first message — agent_a opens on the topic
     opening = (
         f"Let's discuss the following topic: {topic}\n\n"
@@ -36,7 +42,9 @@ def run_conversation(
     # Alternate turns
     speaker, listener = agent_b, agent_a
     for _ in range(turns - 1):
-        message = speaker.chat(message)
+        thought = speaker.think(message)
+        _print_plan(speaker.name, thought, color_map, line_width)
+        message = speaker.respond()
         _print_turn(speaker.name, message, color_map, line_width)
         speaker, listener = listener, speaker
 
@@ -52,6 +60,25 @@ def _print_header(topic: str, agent_a: Agent, agent_b: Agent, color_map: dict):
         f"{b_col}{agent_b.name}{Style.RESET_ALL}"
     )
     print(f"{sep}\n")
+
+
+def _print_plan(name: str, plan: str, color_map: dict, line_width: int):
+    color = color_map[name]
+    prefix = f"{color}{Style.DIM}[{name} thinks]{Style.RESET_ALL}"
+    leader_width = len(name) + 10  # len(" thinks] [")
+    indent = " " * leader_width
+    wrap_width = line_width - leader_width
+
+    first_line = True
+    for paragraph in plan.strip().split("\n\n"):
+        para_text = " ".join(paragraph.split())
+        for line in textwrap.wrap(para_text, width=wrap_width):
+            if first_line:
+                print(f"{Style.DIM}{prefix} {line}{Style.RESET_ALL}")
+                first_line = False
+            else:
+                print(f"{Style.DIM}{indent}{line}{Style.RESET_ALL}")
+        print()
 
 
 def _print_turn(name: str, message: str, color_map: dict, line_width: int):
