@@ -189,6 +189,17 @@ a.transcript-link:hover { color: #5694f1; text-decoration: underline; }
 .bias-neg { color: #c62828; }
 .bias-neutral { color: #aaa; }
 
+/* ── Disclaimer ──────────────────────────────────────── */
+.disclaimer {
+    margin-top: 60px;
+    padding: 16px 20px;
+    border-left: 3px solid #eee;
+    font-size: 12px;
+    color: #bbb;
+    font-style: italic;
+    line-height: 1.6;
+}
+
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 600px) {
     .page { padding: 0 20px 60px; }
@@ -423,10 +434,11 @@ a.transcript-link:hover { color: #5694f1; text-decoration: underline; }
     </div><!-- /stats-grid -->
   </div><!-- /stats-section -->
   {% endif %}
-  <p>
-      This page summarises the results of a simulated debate. For each round, two random AI agents debate a topic. 
-      At the end of the round a third agent acts as judge to select a winner. 
-      All arguements and facts here (with the exception of this paragraph) are AI generated, potentially untrue and do not represent the views of any real human
+  <p class="disclaimer">
+    This page summarises the results of a simulated debate. For each round, two random AI agents
+    debate a topic; at the end a third agent acts as judge to select a winner. All arguments and
+    facts presented (with the exception of this paragraph) are AI-generated, potentially untrue,
+    and do not represent the views of any real person.
   </p>
 </div>
 </body>

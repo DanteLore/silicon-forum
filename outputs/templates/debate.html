@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Debate: {{ topic }}</title>
+<title>Debate Premise: {{ premise or topic }}</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -321,8 +321,7 @@ details[open].thought summary::before { content: "▼  "; }
 <div class="debate">
 
   <header class="debate-header">
-    <h1>{{ topic }}</h1>
-    {% if premise %}<p class="premise">Premise: <em>{{ premise }}</em></p>{% endif %}
+    <h1>Debate Premise: {{ premise or topic }}</h1>
     <div class="participants">
       {% for p in participants %}
       <div class="participant" style="border-color: {{ p.color }}">
