@@ -8,6 +8,7 @@ from engine.agent_pool import make_picker, setup_model_selection
 from engine.debate import run_debate
 from outputs.collector import ResultCollector
 from outputs.console import TerminalOutput
+from outputs.csv_export import SummaryCsv
 from outputs.html import HtmlOutput
 from outputs.summary import SummaryHtml
 from outputs.terminal_stats import TerminalStats
@@ -26,7 +27,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def run_one(run_num: int, total: int, config: dict, config_stem: str, pick) -> dict:
+def run_one(run_num: int, total: int, config: dict, run_dir: str, config_stem: str, pick) -> dict:
     """Run a single debate and return the result row dict."""
     print(f"\n{'=' * 60}")
     print(f"  RUN {run_num} of {total}")
@@ -41,7 +42,7 @@ def run_one(run_num: int, total: int, config: dict, config_stem: str, pick) -> d
     first_speaker = debaters[0].name
 
     run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    html_path = f"results/{config_stem}_{run_timestamp}.html"
+    html_path = f"{run_dir}/{config_stem}_{run_timestamp}.html"
 
     collector = ResultCollector()
     run_debate(
@@ -88,7 +89,9 @@ def main():
 
     config_stem = os.path.splitext(os.path.basename(args.config))[0]
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    summary_path = f"results/{config_stem}_summary_{timestamp}.html"
+    run_dir = f"results/{config_stem}_{timestamp}"
+    summary_path = f"{run_dir}/summary.html"
+    csv_path = f"{run_dir}/results.csv"
 
     if args.model:
         print(f"Running {args.count} debate(s) from {args.config}  [model: {args.model}]")
@@ -97,19 +100,20 @@ def main():
               f"[random model from {len(available_models)} installed]")
     else:
         print(f"Running {args.count} debate(s) from {args.config}")
-    print(f"Summary: {summary_path}\n")
+    print(f"Output:  {run_dir}/\n")
 
     stats_outputs = [
         SummaryHtml(summary_path, title=config.get("topic", config_stem)),
+        SummaryCsv(csv_path),
         TerminalStats(),
     ]
 
     for run_num in range(1, args.count + 1):
-        row = run_one(run_num, args.count, config, config_stem, pick)
+        row = run_one(run_num, args.count, config, run_dir, config_stem, pick)
         for out in stats_outputs:
             out.add_row(row)
 
-    print(f"\nAll done! Summary: {summary_path}")
+    print(f"\nAll done! Output: {run_dir}/")
 
     for out in stats_outputs:
         out.finalize()
