@@ -1,4 +1,5 @@
 import argparse
+import random
 import yaml
 from agents import Agent
 from conversation import run_conversation
@@ -15,6 +16,7 @@ with open(args.config, "r") as f:
     config = yaml.safe_load(f)
 
 agents = [Agent(a) for a in config["agents"]]
+random.shuffle(agents)
 audience = Agent(config["audience"]) if "audience" in config else None
 
 run_conversation(
