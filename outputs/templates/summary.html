@@ -131,19 +131,63 @@ a.transcript-link {
 
 a.transcript-link:hover { color: #5694f1; text-decoration: underline; }
 
-/* ── Stats row ───────────────────────────────────────── */
-.stats {
+/* ── Stats section ───────────────────────────────────── */
+.stats-section {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 2px solid #eee;
+}
+
+.stats-overview {
     display: flex;
     gap: 32px;
-    margin-top: 28px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
     flex-wrap: wrap;
+    margin-bottom: 40px;
 }
 
 .stat { font-size: 14px; }
 .stat-value { font-size: 22px; font-weight: 700; color: #222; display: block; }
 .stat-label { font-size: 12px; color: #aaa; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 0;
+}
+
+.stats-block h3 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 12px;
+}
+
+.stats-block table {
+    font-size: 13px;
+}
+
+.stats-block thead th {
+    font-size: 10px;
+    padding: 6px 10px 6px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.stats-block tbody td {
+    padding: 7px 10px 7px 0;
+    color: #555;
+}
+
+.stats-block tbody tr:last-child { border-bottom: none; }
+
+.n-label { color: #bbb; font-size: 11px; }
+.side-for     { color: #e65100; }
+.side-against { color: #1565c0; }
+.bias-pos { color: #2e7d32; }
+.bias-neg { color: #c62828; }
+.bias-neutral { color: #aaa; }
 
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 600px) {
@@ -220,37 +264,152 @@ a.transcript-link:hover { color: #5694f1; text-decoration: underline; }
   </table>
 
   {% if rows %}
-  {% set upheld_count = rows | selectattr("premise_upheld") | list | length %}
-  {% set rejected_count = rows | rejectattr("premise_upheld") | selectattr("premise_upheld", "ne", none) | list | length %}
-  {% set total = rows | length %}
-  <div class="stats">
-    <div class="stat">
-      <span class="stat-value">{{ total }}</span>
-      <span class="stat-label">Runs</span>
-    </div>
-    <div class="stat">
-      <span class="stat-value" style="color: #2e7d32">{{ upheld_count }}</span>
-      <span class="stat-label">Premise Upheld</span>
-    </div>
-    <div class="stat">
-      <span class="stat-value" style="color: #c62828">{{ rejected_count }}</span>
-      <span class="stat-label">Premise Rejected</span>
-    </div>
-    {% set win_counts = {} %}
-    {% for row in rows if row.winner %}
-      {% if row.winner in win_counts %}
-        {% set _ = win_counts.update({row.winner: win_counts[row.winner] + 1}) %}
-      {% else %}
-        {% set _ = win_counts.update({row.winner: 1}) %}
+  <div class="stats-section">
+
+    <!-- Overview numbers -->
+    <div class="stats-overview">
+      <div class="stat">
+        <span class="stat-value">{{ stats.total }}</span>
+        <span class="stat-label">Runs</span>
+      </div>
+      {% if stats.completed %}
+      <div class="stat">
+        <span class="stat-value" style="color: #2e7d32">{{ stats.upheld }}</span>
+        <span class="stat-label">Premise Upheld</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" style="color: #c62828">{{ stats.rejected }}</span>
+        <span class="stat-label">Premise Rejected</span>
+      </div>
+      {% if stats.uphold_rate is not none %}
+      <div class="stat">
+        <span class="stat-value">{{ (stats.uphold_rate * 100) | round | int }}%</span>
+        <span class="stat-label">Uphold Rate</span>
+      </div>
       {% endif %}
-    {% endfor %}
-    {% for name, count in win_counts.items() %}
-    <div class="stat">
-      <span class="stat-value">{{ count }}</span>
-      <span class="stat-label">{{ name }} wins</span>
+      {% endif %}
     </div>
-    {% endfor %}
-  </div>
+
+    <div class="stats-grid">
+
+      <!-- Debater performance -->
+      {% if stats.agents %}
+      <div class="stats-block">
+        <h3>Debater Performance</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Side</th>
+              <th>n</th>
+              <th>Wins</th>
+              <th>Win%</th>
+              <th>Avg score</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in stats.agents %}
+            <tr>
+              <td>{{ a.name }}</td>
+              <td class="{{ 'side-for' if a.side == 'for' else 'side-against' }}">{{ a.side }}</td>
+              <td class="n-label">{{ a.n }}</td>
+              <td>{{ a.wins }}</td>
+              <td>{% if a.win_rate is not none %}{{ (a.win_rate * 100) | round | int }}%{% else %}—{% endif %}</td>
+              <td>{{ a.avg_score if a.avg_score is not none else "—" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <!-- Judge profile -->
+      {% if stats.judges %}
+      <div class="stats-block">
+        <h3>Judge Profile</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>n</th>
+              <th>Upheld</th>
+              <th>Rejected</th>
+              <th>Uphold%</th>
+              <th>Bias</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for j in stats.judges %}
+            <tr>
+              <td>{{ j.name }}</td>
+              <td class="n-label">{{ j.n }}</td>
+              <td>{{ j.upheld }}</td>
+              <td>{{ j.rejected }}</td>
+              <td>{% if j.uphold_rate is not none %}{{ (j.uphold_rate * 100) | round | int }}%{% else %}—{% endif %}</td>
+              <td>
+                {% if j.bias is not none %}
+                  {% if j.bias > 0.01 %}
+                    <span class="bias-pos">+{{ (j.bias * 100) | round | int }}%</span>
+                  {% elif j.bias < -0.01 %}
+                    <span class="bias-neg">{{ (j.bias * 100) | round | int }}%</span>
+                  {% else %}
+                    <span class="bias-neutral">~0%</span>
+                  {% endif %}
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <!-- Speaking order -->
+      {% if stats.order %}
+      <div class="stats-block">
+        <h3>Speaking Order <span class="n-label">(n={{ stats.order.n }})</span></h3>
+        <table>
+          <thead><tr><th>Position</th><th>Wins</th><th>Win%</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>First speaker</td>
+              <td>{{ stats.order.first_wins }}</td>
+              <td>{{ (stats.order.first_win_rate * 100) | round | int }}%</td>
+            </tr>
+            <tr>
+              <td>Second speaker</td>
+              <td>{{ stats.order.second_wins }}</td>
+              <td>{{ (stats.order.second_win_rate * 100) | round | int }}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <!-- Side effect -->
+      {% if stats.sides.n %}
+      <div class="stats-block">
+        <h3>Side Effect <span class="n-label">(n={{ stats.sides.n }})</span></h3>
+        <table>
+          <thead><tr><th>Side</th><th>Wins</th><th>Win%</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="side-for">For</td>
+              <td>{{ stats.sides.for_wins }}</td>
+              <td>{% if stats.sides.for_win_rate is not none %}{{ (stats.sides.for_win_rate * 100) | round | int }}%{% else %}—{% endif %}</td>
+            </tr>
+            <tr>
+              <td class="side-against">Against</td>
+              <td>{{ stats.sides.against_wins }}</td>
+              <td>{% if stats.sides.against_win_rate is not none %}{{ (stats.sides.against_win_rate * 100) | round | int }}%{% else %}—{% endif %}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+    </div><!-- /stats-grid -->
+  </div><!-- /stats-section -->
   {% endif %}
 
 </div>

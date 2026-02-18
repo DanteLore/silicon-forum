@@ -2,6 +2,8 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from outputs import stats as stats_mod
+
 _TEMPLATE_DIR = Path(__file__).parent / "templates"
 
 _env = Environment(
@@ -16,7 +18,7 @@ class SummaryHtml:
     def __init__(self, path: str, title: str = ""):
         self._path = Path(path)
         self._title = title
-        self._rows: list[dict] = []
+        self.rows: list[dict] = []
         self._template = _env.get_template("summary.html")
 
     def add_row(
@@ -30,17 +32,19 @@ class SummaryHtml:
         judge: str | None,
         premise: str | None,
         premise_upheld: bool | None,
+        first_speaker: str | None = None,
     ):
-        self._rows.append({
-            "run_num": run_num,
-            "winner": winner,
-            "scores": scores,
+        self.rows.append({
+            "run_num":             run_num,
+            "winner":              winner,
+            "scores":              scores,
             "transcript_filename": transcript_filename,
-            "agent_for": agent_for,
-            "agent_against": agent_against,
-            "judge": judge,
-            "premise": premise,
-            "premise_upheld": premise_upheld,
+            "agent_for":           agent_for,
+            "agent_against":       agent_against,
+            "judge":               judge,
+            "premise":             premise,
+            "premise_upheld":      premise_upheld,
+            "first_speaker":       first_speaker,
         })
         self._flush()
 
@@ -48,6 +52,7 @@ class SummaryHtml:
         self._path.parent.mkdir(parents=True, exist_ok=True)
         html = self._template.render(
             title=self._title,
-            rows=self._rows,
+            rows=self.rows,
+            stats=stats_mod.compute(self.rows),
         )
         self._path.write_text(html, encoding="utf-8")
