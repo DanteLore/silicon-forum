@@ -41,13 +41,22 @@ class Agent:
         )
         return self.chat(prompt)
 
-    def score(self, speaker_name: str) -> str:
-        return self.chat(
-            f"Now give your current running score for {speaker_name} out of 10. "
-            "This is a cumulative score reflecting their whole performance so far — "
-            "revise it up if they've strengthened their case, or down if they've been "
-            "rebutted or contradicted. State the score and one sentence explaining any change."
-        )
+    def score(self, speaker_name: str, first: bool = False) -> str:
+        if first:
+            prompt = (
+                f"Give {speaker_name} an initial score out of 10 based on this first "
+                "impression. The score must be a whole number between 0 and 10 inclusive. "
+                "State the score and one sentence explaining your reasoning."
+            )
+        else:
+            prompt = (
+                f"Now give your current running score for {speaker_name} out of 10. "
+                "The score must be a whole number between 0 and 10 inclusive. "
+                "This is a cumulative score reflecting their whole performance so far — "
+                "revise it up if they've strengthened their case, or down if they've been "
+                "rebutted or contradicted. State the score and one sentence explaining any change."
+            )
+        return self.chat(prompt)
 
     def verdict(self, names: list[str]) -> str:
         return self.chat(

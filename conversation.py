@@ -41,8 +41,9 @@ def run_conversation(
     )
     message = agent_a.chat(opening)
     _print_turn(agent_a.name, message, color_map, line_width)
+    scored: set = set()
     if audience:
-        _judge_turn(audience, agent_a.name, message, color_map, line_width)
+        _judge_turn(audience, agent_a.name, message, color_map, line_width, scored)
 
     # Alternate turns
     speaker, listener = agent_b, agent_a
@@ -52,7 +53,7 @@ def run_conversation(
         message = speaker.respond()
         _print_turn(speaker.name, message, color_map, line_width)
         if audience:
-            _judge_turn(audience, speaker.name, message, color_map, line_width)
+            _judge_turn(audience, speaker.name, message, color_map, line_width, scored)
         speaker, listener = listener, speaker
 
     if audience:
@@ -91,10 +92,11 @@ def _print_plan(name: str, plan: str, color_map: dict, line_width: int):
         print()
 
 
-def _judge_turn(audience: Agent, speaker_name: str, statement: str, color_map: dict, line_width: int):
+def _judge_turn(audience: Agent, speaker_name: str, statement: str, color_map: dict, line_width: int, scored: set):
     thought = audience.evaluate(speaker_name, statement)
     _print_plan(audience.name, thought, color_map, line_width)
-    verdict = audience.score(speaker_name)
+    verdict = audience.score(speaker_name, first=speaker_name not in scored)
+    scored.add(speaker_name)
     _print_score(audience.name, speaker_name, verdict, color_map, line_width)
 
 
