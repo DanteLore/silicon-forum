@@ -102,8 +102,8 @@ tbody td {
 }
 
 .col-run    { width: 44px; color: #aaa; font-size: 13px; }
-.col-winner { font-weight: 500; color: #222; }
 .col-scores { font-size: 13px; white-space: nowrap; }
+.model-tag  { font-size: 11px; color: #bbb; font-weight: 400; }
 
 /* ── Badges ──────────────────────────────────────────── */
 .badge {
@@ -208,11 +208,6 @@ a.transcript-link:hover { color: #5694f1; text-decoration: underline; }
 
   <header class="page-header">
     <h1>Results: {{ title }}</h1>
-
-    <p>This page summarises the results of a simulated debate. For each round, two random AI agents debate a topic. 
-      At the end of the round a third agent acts as judge to select a winner. 
-      All arguements and facts here (with the exception of this paragraph) are AI generated, potentially untrue and do not represent the views of any real human being.</p>
-
     <div class="subtitle">{{ rows | length }} debate{{ 's' if rows | length != 1 else '' }} recorded</div>
     {% if rows and rows[0].premise %}
     <div class="premise-text">Premise: {{ rows[0].premise }}</div>
@@ -226,7 +221,6 @@ a.transcript-link:hover { color: #5694f1; text-decoration: underline; }
         <th>For</th>
         <th>Against</th>
         <th>Judge</th>
-        <th>Winner</th>
         <th>Scores</th>
         <th>Result</th>
         <th>Link</th>
@@ -237,11 +231,24 @@ a.transcript-link:hover { color: #5694f1; text-decoration: underline; }
       <tr>
         <td class="col-run">{{ row.run_num }}</td>
 
-        <td>{{ row.agent_for or "—" }}</td>
-        <td>{{ row.agent_against or "—" }}</td>
-        <td>{{ row.judge or "—" }}</td>
-
-        <td class="col-winner">{{ row.winner or "—" }}</td>
+        <td>
+          {% if row.agent_for %}
+            {% if row.winner == row.agent_for %}🏆 {% endif %}{{ row.agent_for }}
+            {% if row.model_for %}<span class="model-tag">({{ row.model_for }})</span>{% endif %}
+          {% else %}—{% endif %}
+        </td>
+        <td>
+          {% if row.agent_against %}
+            {% if row.winner == row.agent_against %}🏆 {% endif %}{{ row.agent_against }}
+            {% if row.model_against %}<span class="model-tag">({{ row.model_against }})</span>{% endif %}
+          {% else %}—{% endif %}
+        </td>
+        <td>
+          {% if row.judge %}
+            {{ row.judge }}
+            {% if row.model_judge %}<span class="model-tag">({{ row.model_judge }})</span>{% endif %}
+          {% else %}—{% endif %}
+        </td>
 
         <td class="col-scores">
           {% for name, s in row.scores.items() %}
@@ -413,80 +420,14 @@ a.transcript-link:hover { color: #5694f1; text-decoration: underline; }
       </div>
       {% endif %}
 
-      <!-- Model debater performance -->
-      {% if stats.model_debaters %}
-      <div class="stats-block">
-        <h3>Model Performance (debater)</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Model</th>
-              <th>n</th>
-              <th>Wins</th>
-              <th>Win%</th>
-              <th>Avg score</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for m in stats.model_debaters %}
-            <tr>
-              <td style="font-family: monospace; font-size: 12px;">{{ m.name }}</td>
-              <td class="n-label">{{ m.n }}</td>
-              <td>{{ m.wins }}</td>
-              <td>{% if m.win_rate is not none %}{{ (m.win_rate * 100) | round | int }}%{% else %}—{% endif %}</td>
-              <td>{{ m.avg_score if m.avg_score is not none else "—" }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% endif %}
-
-      <!-- Model judge profile -->
-      {% if stats.model_judges %}
-      <div class="stats-block">
-        <h3>Model Performance (judge)</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Model</th>
-              <th>n</th>
-              <th>Upheld</th>
-              <th>Rejected</th>
-              <th>Uphold%</th>
-              <th>Bias</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for j in stats.model_judges %}
-            <tr>
-              <td style="font-family: monospace; font-size: 12px;">{{ j.name }}</td>
-              <td class="n-label">{{ j.n }}</td>
-              <td>{{ j.upheld }}</td>
-              <td>{{ j.rejected }}</td>
-              <td>{% if j.uphold_rate is not none %}{{ (j.uphold_rate * 100) | round | int }}%{% else %}—{% endif %}</td>
-              <td>
-                {% if j.bias is not none %}
-                  {% if j.bias > 0.01 %}
-                    <span class="bias-pos">+{{ (j.bias * 100) | round | int }}%</span>
-                  {% elif j.bias < -0.01 %}
-                    <span class="bias-neg">{{ (j.bias * 100) | round | int }}%</span>
-                  {% else %}
-                    <span class="bias-neutral">~0%</span>
-                  {% endif %}
-                {% else %}—{% endif %}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% endif %}
-
     </div><!-- /stats-grid -->
   </div><!-- /stats-section -->
   {% endif %}
-
+  <p>
+      This page summarises the results of a simulated debate. For each round, two random AI agents debate a topic. 
+      At the end of the round a third agent acts as judge to select a winner. 
+      All arguements and facts here (with the exception of this paragraph) are AI generated, potentially untrue and do not represent the views of any real human
+  </p>
 </div>
 </body>
 </html>
