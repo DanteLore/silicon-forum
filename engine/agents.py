@@ -175,18 +175,31 @@ class Agent:
         result["deliberation"] = deliberation   # returned for THINK emission
         return result
 
-    def think(self, opponent_message: str) -> str:
+    def think(self, opponent_message: str, final: bool = False) -> str:
+        final_note = (
+            " This is your final turn — plan a strong closing argument that "
+            "summarises your case and lands a decisive point."
+            if final else ""
+        )
         prompt = (
             f"Your opponent just said:\n\n\"{opponent_message}\"\n\n"
             "Before you respond, privately reflect: What did they get right or wrong? "
             "How does this shift the argument? How might the audience be reacting? "
-            "Plan what you'll say next. Do not give your debate response yet."
+            f"Plan what you'll say next.{final_note} Do not give your debate response yet."
         )
         return self.chat(prompt)
 
-    def respond(self) -> str:
+    def respond(self, final: bool = False) -> str:
+        if final:
+            instruction = (
+                "This is your final turn. Deliver your closing argument: "
+                "summarise your strongest points, rebut your opponent's key claim, "
+                "and make a clear case for why you have won this debate. "
+            )
+        else:
+            instruction = "Now give your actual debate response, in character. "
         return self.chat(
-            "Now give your actual debate response, in character. "
+            instruction +
             "Speak in your own voice only — do not write stage directions, "
             "do not write your opponent's lines, and do not present both sides."
         )

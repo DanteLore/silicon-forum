@@ -97,9 +97,11 @@ class Debate:
     def _turn_loop(self, opening_message: str):
         message = opening_message
         speaker, listener = self._agent_b, self._agent_a
-        for _ in range(self._turns - 1):
-            self._emit(EventType.THINK, speaker.name, speaker.think(message))
-            message = speaker.respond()
+        remaining = self._turns - 1
+        for i in range(remaining):
+            final = (i >= remaining - 2)  # last two turns: each debater's final go
+            self._emit(EventType.THINK, speaker.name, speaker.think(message, final=final))
+            message = speaker.respond(final=final)
             self._emit(EventType.TURN, speaker.name, message)
             if self._judge:
                 self._judge_turn(speaker.name, message)
