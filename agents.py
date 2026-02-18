@@ -18,6 +18,7 @@ class Agent:
         self.model: str = config["model"]
         self.color: str = config.get("color", "white")
         self.personality: str = config.get("personality", "").strip()
+        self.side: str | None = config.get("side")   # "for" | "against" | None
 
         system_prompt = "\n\n".join(filter(None, [
             config.get("personality", "").strip(),
@@ -72,9 +73,21 @@ class Agent:
         raw = self.chat(prompt, json_mode=True)
         return _parse_json(raw)
 
-    def verdict(self, names: list[str]) -> dict:
+    def verdict(self, names: list[str], premise: str = None,
+                sides: dict = None) -> dict:
         """Return {"winner": str, "scores": {name: int, ...}, "reasoning": str}."""
+        context = ""
+        if premise and sides:
+            lines = []
+            for name in names:
+                side = sides.get(name)
+                if side:
+                    label = "FOR" if side == "for" else "AGAINST"
+                    lines.append(f'  {name} argued {label} the premise: "{premise}"')
+            if lines:
+                context = "The debate premise was:\n" + "\n".join(lines) + "\n\n"
         prompt = (
+            f"{context}"
             f"The debate is over. Give final scores and declare a winner. "
             f"Respond with a JSON object in exactly this format:\n"
             f'{{"winner": "{names[0]}", "scores": {{"{names[0]}": 8, "{names[1]}": 6}}, '

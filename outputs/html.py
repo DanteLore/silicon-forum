@@ -48,7 +48,8 @@ class HtmlOutput:
     def __init__(self, path: str):
         self._path = Path(path)
         self._topic = ""
-        self._participants: list[dict] = []   # {name, color, bio}
+        self._premise: str | None = None
+        self._participants: list[dict] = []   # {name, color, bio, side}
         self._colors: dict[str, str] = {}     # name -> CSS color
         self._events: list[dict] = []
         self._verdict: dict | None = None
@@ -59,16 +60,19 @@ class HtmlOutput:
 
         if event.type == EventType.HEADER:
             self._topic = event.metadata["topic"]
+            self._premise = event.metadata.get("premise")
             self._colors = {
                 name: _css(col)
                 for name, col in event.metadata["colors"].items()
             }
             personalities = event.metadata.get("personalities", {})
+            sides = event.metadata.get("sides", {})
             self._participants = [
                 {
                     "name": name,
                     "color": self._colors.get(name, "#666"),
                     "bio": personalities.get(name, ""),
+                    "side": sides.get(name),
                 }
                 for name in event.metadata["participants"]
             ]
@@ -104,6 +108,8 @@ class HtmlOutput:
                 "content": event.content,
                 "winner": event.metadata.get("winner"),
                 "scores": event.metadata.get("scores", {}),
+                "premise": event.metadata.get("premise"),
+                "premise_upheld": event.metadata.get("premise_upheld"),
             }
 
         self._flush()
@@ -112,6 +118,7 @@ class HtmlOutput:
         self._path.parent.mkdir(parents=True, exist_ok=True)
         html = self._template.render(
             topic=self._topic,
+            premise=self._premise,
             participants=self._participants,
             colors=self._colors,
             events=self._events,

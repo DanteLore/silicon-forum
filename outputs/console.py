@@ -40,25 +40,33 @@ class TerminalOutput:
         elif event.type == EventType.VERDICT:
             self._print_verdict(event.speaker, event.content, color,
                                 winner=event.metadata.get("winner"),
-                                scores=event.metadata.get("scores"))
+                                scores=event.metadata.get("scores"),
+                                premise=event.metadata.get("premise"),
+                                premise_upheld=event.metadata.get("premise_upheld"))
 
     def _print_header(self, event: DebateEvent):
         topic = event.metadata["topic"]
+        premise = event.metadata.get("premise")
+        sides = event.metadata.get("sides", {})
         participants = event.metadata["participants"]
         personalities = event.metadata.get("personalities", {})
         sep = Style.BRIGHT + "=" * 60 + Style.RESET_ALL
         print(f"\n{sep}")
         print(f"{Style.BRIGHT}Topic:{Style.RESET_ALL} {topic}")
+        if premise:
+            print(f"{Style.BRIGHT}Premise:{Style.RESET_ALL} {premise}")
         names = " and ".join(
             f"{self._colors.get(n, Fore.WHITE)}{n}{Style.RESET_ALL}"
             for n in participants
         )
         print(f"{Style.BRIGHT}Participants:{Style.RESET_ALL} {names}")
         for name in participants:
+            color = self._colors.get(name, Fore.WHITE)
+            side = sides.get(name)
+            side_label = f"  [{Style.BRIGHT}{'FOR' if side == 'for' else 'AGAINST'}{Style.RESET_ALL}{Style.DIM}]{Style.RESET_ALL}" if side else ""
             bio = personalities.get(name, "")
+            prefix = f"{color}{Style.DIM}{name}:{Style.RESET_ALL}{side_label}"
             if bio:
-                color = self._colors.get(name, Fore.WHITE)
-                prefix = f"{color}{Style.DIM}{name}:{Style.RESET_ALL}"
                 leader_width = len(name) + 2
                 indent = " " * leader_width
                 wrap_width = self.line_width - leader_width
@@ -69,6 +77,8 @@ class TerminalOutput:
                         first_line = False
                     else:
                         print(f"{Style.DIM}{indent}{line}{Style.RESET_ALL}")
+            elif side:
+                print(f"{Style.DIM}{prefix}{Style.RESET_ALL}")
         print(f"{sep}\n")
 
     def _print_thought(self, name: str, content: str, color):
@@ -121,7 +131,8 @@ class TerminalOutput:
                 print(f"{indent}{line}")
         print()
 
-    def _print_verdict(self, judge: str, content: str, color, winner=None, scores=None):
+    def _print_verdict(self, judge: str, content: str, color, winner=None,
+                       scores=None, premise=None, premise_upheld=None):
         sep = color + Style.BRIGHT + "=" * 60 + Style.RESET_ALL
         print(f"{sep}")
         print(f"{color}{Style.BRIGHT}FINAL VERDICT — {judge}{Style.RESET_ALL}\n")
@@ -134,6 +145,9 @@ class TerminalOutput:
                 for n, s in scores.items()
             )
             print(f"{score_line}\n")
+        if premise and premise_upheld is not None:
+            label = f"{Fore.GREEN}UPHELD{Style.RESET_ALL}" if premise_upheld else f"{Fore.RED}REJECTED{Style.RESET_ALL}"
+            print(f"{Style.BRIGHT}Premise:{Style.RESET_ALL} \"{premise}\" — {Style.BRIGHT}{label}\n")
         for line in textwrap.wrap(" ".join(content.split()), width=self.line_width):
             print(line)
         print(f"\n{sep}\n")

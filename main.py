@@ -37,6 +37,7 @@ run_conversation(
     agents[0],
     agents[1],
     topic=config["topic"],
+    premise=config.get("premise"),
     turns=config.get("turns", DEFAULT_TURNS),
     audience=audience,
     outputs=outputs,

@@ -86,6 +86,20 @@ body {
     font-style: italic;
 }
 
+.participant-side {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 3px;
+    padding: 1px 6px;
+    margin-top: 4px;
+}
+
+.side-for   { background: #e8f5e9; color: #2e7d32; }
+.side-against { background: #fce4ec; color: #c62828; }
+
 /* ── Transcript ──────────────────────────────────────── */
 .transcript {
     display: flex;
@@ -213,6 +227,27 @@ details[open].thought summary::before { content: "▼  "; }
 .verdict-body p { margin-bottom: 10px; }
 .verdict-body p:last-child { margin-bottom: 0; }
 
+.premise {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 16px;
+    margin-top: -8px;
+}
+
+.premise-result {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 3px;
+    padding: 3px 10px;
+    margin-bottom: 14px;
+}
+
+.premise-upheld   { background: #e8f5e9; color: #2e7d32; }
+.premise-rejected { background: #fce4ec; color: #c62828; }
+
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 540px) {
     .debate { padding: 0 20px 60px; }
@@ -233,10 +268,16 @@ details[open].thought summary::before { content: "▼  "; }
 
   <header class="debate-header">
     <h1>{{ topic }}</h1>
+    {% if premise %}<p class="premise">Premise: <em>{{ premise }}</em></p>{% endif %}
     <div class="participants">
       {% for p in participants %}
       <div class="participant" style="border-color: {{ p.color }}">
         <span class="participant-name" style="color: {{ p.color }}">{{ p.name }}</span>
+        {% if p.side %}
+        <span class="participant-side {{ 'side-for' if p.side == 'for' else 'side-against' }}">
+          {{ "For" if p.side == "for" else "Against" }}
+        </span>
+        {% endif %}
         {% if p.bio %}<span class="participant-bio">{{ p.bio }}</span>{% endif %}
       </div>
       {% endfor %}
@@ -292,6 +333,14 @@ details[open].thought summary::before { content: "▼  "; }
         <span class="score-number"> {{ s }}/10</span>
       </div>
       {% endfor %}
+    </div>
+    {% endif %}
+    {% if verdict.premise is not none and verdict.premise_upheld is not none %}
+    <div>
+      <span class="premise-result {{ 'premise-upheld' if verdict.premise_upheld else 'premise-rejected' }}">
+        Premise {{ "Upheld" if verdict.premise_upheld else "Rejected" }}
+      </span>
+      <span class="premise"> — <em>{{ verdict.premise }}</em></span>
     </div>
     {% endif %}
     <div class="verdict-body">{{ verdict.content | paragraphs }}</div>

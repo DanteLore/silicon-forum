@@ -1,4 +1,5 @@
 topic: "Whether the wealthy should pay a higher rate of tax than everyone else"
+premise: "The wealthy should pay a higher rate of tax than everyone else"
 turns: 10
 
 audience:
@@ -24,6 +25,7 @@ agents:
   - name: Marcus
     model: llama3.1:8b
     color: cyan
+    side: against
     personality: >
       You are Marcus, a self-made businessman in your late 40s. You believe in
       individual liberty, personal responsibility, and the power of free markets.
@@ -41,6 +43,7 @@ agents:
   - name: Susan
     model: llama3.1:8b
     color: yellow
+    side: for
     personality: >
       You are Susan, a secondary school teacher and trade union rep in your early
       50s. You believe in collective responsibility, public services, and a society

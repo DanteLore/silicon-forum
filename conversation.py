@@ -6,6 +6,7 @@ def run_conversation(
     agent_a: Agent,
     agent_b: Agent,
     topic: str,
+    premise: str = None,
     turns: int = 6,
     audience: Agent = None,
     outputs: list = None,
@@ -15,6 +16,8 @@ def run_conversation(
     color_map = {a.name: a.color for a in [agent_a, agent_b]}
     if audience:
         color_map[audience.name] = audience.color
+
+    sides = {a.name: a.side for a in [agent_a, agent_b] if a.side}
 
     def emit(type, speaker="", content="", **meta):
         event = DebateEvent(
@@ -27,7 +30,7 @@ def run_conversation(
         for out in outputs:
             out(event)
 
-    emit(EventType.HEADER, topic=topic,
+    emit(EventType.HEADER, topic=topic, premise=premise, sides=sides,
          participants=[agent_a.name, agent_b.name],
          colors=color_map,
          personalities={a.name: a.personality for a in [agent_a, agent_b]})
@@ -64,6 +67,15 @@ def run_conversation(
         speaker, listener = listener, speaker
 
     if audience:
-        result = audience.verdict([agent_a.name, agent_b.name])
+        result = audience.verdict([agent_a.name, agent_b.name],
+                                  premise=premise, sides=sides)
+        winner = result.get("winner")
+        premise_upheld = None
+        if premise and winner and sides:
+            winner_side = sides.get(winner)
+            if winner_side:
+                premise_upheld = (winner_side == "for")
+
         emit(EventType.VERDICT, audience.name, result.get("reasoning", ""),
-             winner=result.get("winner"), scores=result.get("scores", {}))
+             winner=winner, scores=result.get("scores", {}),
+             premise=premise, premise_upheld=premise_upheld)
