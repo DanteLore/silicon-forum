@@ -49,7 +49,8 @@ class Agent:
             "If evidence is used, does it actually warrant the conclusion, or does it merely "
             "suggest it? If they are challenging their opponent's evidence, is that challenge "
             "well-reasoned — and if so, credit it as a strong move in its own right. "
-            "How effective is the rhetoric? Note strengths and weaknesses. Do not score yet."
+            "How effective is the rhetoric? Note strengths and weaknesses. Do not score yet. "
+            "Write in the first person — use 'I', 'my'. Do not refer to yourself by name."
         )
         return self.chat(prompt)
 
@@ -153,10 +154,11 @@ class Agent:
         # Call 1 — private deliberation; persona can come through freely
         deliberation = self.chat(
             f"{context}"
-            f"The debate is over. As {self.name}, privately weigh up what you just heard. "
+            f"The debate is over. Privately weigh up what you just heard. "
             f"Who made the stronger case and why? Which specific arguments or moments "
             f"swayed you, and which fell flat? Give each debater a score out of 10 "
-            f"and decide on a winner. Be specific and think as yourself."
+            f"and decide on a winner. Be specific. Write in the first person — "
+            f"use 'I', 'my', 'in my view'. Do not refer to yourself by name or in the third person."
         )
 
         # Call 2 — extract structure from the deliberation; enforce score consistency
@@ -164,9 +166,11 @@ class Agent:
 
         # Call 3 — public announcement in character, shown in the verdict box
         result["reasoning"] = self.chat(
-            f"Now deliver your verdict to the debaters and audience. Speak as {self.name} "
-            f"— briefly, in your own voice. State who won, what they did well, "
-            f"and what let the other side down. No more than a short paragraph."
+            f"Now deliver your verdict to the debaters and audience, briefly. "
+            f"State who won, what they did well, and what let the other side down. "
+            f"Write in the first person — use 'I', 'my', 'in my view'. "
+            f"Do not refer to yourself by name or in the third person. "
+            f"No more than a short paragraph."
         )
         result["deliberation"] = deliberation   # returned for THINK emission
         return result
@@ -181,7 +185,11 @@ class Agent:
         return self.chat(prompt)
 
     def respond(self) -> str:
-        return self.chat("Now give your actual debate response, in character.")
+        return self.chat(
+            "Now give your actual debate response, in character. "
+            "Speak in your own voice only — do not write stage directions, "
+            "do not write your opponent's lines, and do not present both sides."
+        )
 
     def chat(self, message: str, json_mode: bool = False) -> str:
         self._history.append({"role": "user", "content": message})

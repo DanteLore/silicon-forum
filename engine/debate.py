@@ -69,9 +69,18 @@ class Debate:
             self._emit(EventType.PLAN, agent.name, agent.plan(self._topic))
 
     def _opening_statement(self) -> str:
+        side_line = ""
+        if self._agent_a.side and self._premise:
+            label = "FOR" if self._agent_a.side == "for" else "AGAINST"
+            side_line = f"You are arguing {label} the premise: \"{self._premise}\"\n\n"
         opening = (
-            f"Let's debate the following topic: {self._topic}\n\n"
-            f"You're speaking with {self._agent_b.name}. Please open the discussion."
+            f"The debate topic is: {self._topic}\n\n"
+            f"{side_line}"
+            f"Your opponent is {self._agent_b.name}. "
+            f"Deliver your opening argument now, in your own voice. "
+            f"Speak directly and make your case. "
+            f"Do not write stage directions, do not write your opponent's lines, "
+            f"and do not present both sides — give only your own argument."
         )
         message = self._agent_a.chat(opening)
         self._emit(EventType.TURN, self._agent_a.name, message)
