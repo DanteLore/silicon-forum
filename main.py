@@ -15,6 +15,7 @@ with open(args.config, "r") as f:
     config = yaml.safe_load(f)
 
 agents = [Agent(a) for a in config["agents"]]
+audience = Agent(config["audience"]) if "audience" in config else None
 
 run_conversation(
     agents[0],
@@ -22,4 +23,5 @@ run_conversation(
     topic=config["topic"],
     turns=config.get("turns", DEFAULT_TURNS),
     line_width=config.get("line_width", DEFAULT_LINE_WIDTH),
+    audience=audience,
 )

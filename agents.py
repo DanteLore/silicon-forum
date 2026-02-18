@@ -29,6 +29,30 @@ class Agent:
         )
         return self.chat(prompt)
 
+    def evaluate(self, speaker_name: str, statement: str) -> str:
+        prompt = (
+            f"{speaker_name} just argued:\n\n\"{statement}\"\n\n"
+            "Privately consider this argument. How coherent is the logic? "
+            "If evidence is used, does it actually warrant the conclusion, or does it merely "
+            "suggest it? If they are challenging their opponent's evidence, is that challenge "
+            "well-reasoned — and if so, credit it as a strong move in its own right. "
+            "How effective is the rhetoric? Note strengths and weaknesses. Do not score yet."
+        )
+        return self.chat(prompt)
+
+    def score(self, speaker_name: str) -> str:
+        return self.chat(
+            f"Now score {speaker_name}'s argument. Give a mark out of 10 followed by "
+            "a single sentence explaining your reasoning."
+        )
+
+    def verdict(self, names: list[str]) -> str:
+        return self.chat(
+            f"The debate is over. Review the performances of {names[0]} and {names[1]} "
+            "across all their arguments. Give each a final overall score out of 10, "
+            "then declare a winner and explain in 2-3 sentences why they won."
+        )
+
     def think(self, opponent_message: str) -> str:
         prompt = (
             f"Your opponent just said:\n\n\"{opponent_message}\"\n\n"
