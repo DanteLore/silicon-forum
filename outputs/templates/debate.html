@@ -158,6 +158,15 @@ details[open].thought summary::before { content: "▼  "; }
 .score-judge { font-weight: 500; }
 .score-sep { color: #ccc; }
 .score-target { font-weight: 500; }
+.score-value {
+    font-weight: 700;
+    font-size: 14px;
+    color: #222;
+    background: #e8e8e8;
+    border-radius: 3px;
+    padding: 1px 6px;
+    margin-left: 2px;
+}
 .score-text { color: #888; flex: 1; }
 
 /* ── Verdict ─────────────────────────────────────────── */
@@ -174,6 +183,31 @@ details[open].thought summary::before { content: "▼  "; }
     font-weight: 400;
     color: #222;
     margin-bottom: 14px;
+}
+
+.verdict-winner {
+    font-size: 22px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 10px;
+}
+
+.verdict-scores {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.verdict-score-item {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.verdict-score-item .score-number {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222;
 }
 
 .verdict-body p { margin-bottom: 10px; }
@@ -233,6 +267,7 @@ details[open].thought summary::before { content: "▼  "; }
       <span class="score-judge" style="color: {{ event.color }}">{{ event.speaker }}</span>
       <span class="score-sep">→</span>
       <span class="score-target" style="color: {{ event.target_color }}">{{ event.target }}</span>
+      {% if event.score is not none %}<span class="score-value">{{ event.score }}/10</span>{% endif %}
       <span class="score-text">{{ event.content | wordwrap_collapse }}</span>
     </div>
 
@@ -244,6 +279,21 @@ details[open].thought summary::before { content: "▼  "; }
   {% if verdict %}
   <div class="verdict">
     <h2>Final Verdict — <span style="color: {{ verdict.color }}">{{ verdict.judge }}</span></h2>
+    {% if verdict.winner %}
+    <div class="verdict-winner">
+      Winner: <span style="color: {{ colors.get(verdict.winner, '#666') }}">{{ verdict.winner }}</span>
+    </div>
+    {% endif %}
+    {% if verdict.scores %}
+    <div class="verdict-scores">
+      {% for name, s in verdict.scores.items() %}
+      <div class="verdict-score-item">
+        <span style="color: {{ colors.get(name, '#666') }}">{{ name }}</span>
+        <span class="score-number"> {{ s }}/10</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
     <div class="verdict-body">{{ verdict.content | paragraphs }}</div>
   </div>
   {% endif %}

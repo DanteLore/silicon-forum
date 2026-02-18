@@ -46,9 +46,10 @@ def run_conversation(
 
     def judge_turn(speaker_name, statement):
         emit(EventType.THINK, audience.name, audience.evaluate(speaker_name, statement))
-        verdict = audience.score(speaker_name, first=speaker_name not in scored)
+        result = audience.score(speaker_name, first=speaker_name not in scored)
         scored.add(speaker_name)
-        emit(EventType.SCORE, audience.name, verdict, target=speaker_name)
+        emit(EventType.SCORE, audience.name, result.get("reasoning", ""),
+             target=speaker_name, score=result.get("score"))
 
     if audience:
         judge_turn(agent_a.name, message)
@@ -63,5 +64,6 @@ def run_conversation(
         speaker, listener = listener, speaker
 
     if audience:
-        emit(EventType.VERDICT, audience.name,
-             audience.verdict([agent_a.name, agent_b.name]))
+        result = audience.verdict([agent_a.name, agent_b.name])
+        emit(EventType.VERDICT, audience.name, result.get("reasoning", ""),
+             winner=result.get("winner"), scores=result.get("scores", {}))

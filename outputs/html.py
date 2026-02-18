@@ -94,11 +94,17 @@ class HtmlOutput:
                 "content": event.content,
                 "target": target,
                 "target_color": self._colors.get(target, "#666"),
+                "score": event.metadata.get("score"),
             })
 
         elif event.type == EventType.VERDICT:
-            self._verdict = {"judge": event.speaker, "color": color,
-                             "content": event.content}
+            self._verdict = {
+                "judge": event.speaker,
+                "color": color,
+                "content": event.content,
+                "winner": event.metadata.get("winner"),
+                "scores": event.metadata.get("scores", {}),
+            }
 
         self._flush()
 
@@ -107,6 +113,7 @@ class HtmlOutput:
         html = self._template.render(
             topic=self._topic,
             participants=self._participants,
+            colors=self._colors,
             events=self._events,
             verdict=self._verdict,
         )

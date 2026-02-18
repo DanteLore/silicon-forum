@@ -1,6 +1,15 @@
+import json
+import re
 from openai import OpenAI
 
 OLLAMA_BASE_URL = "http://localhost:11434/v1"
+
+
+def _parse_json(text: str) -> dict:
+    """Parse a JSON response, stripping markdown code fences if present."""
+    text = re.sub(r"^```(?:json)?\s*\n?", "", text.strip(), flags=re.MULTILINE)
+    text = re.sub(r"\n?```\s*$", "", text.strip(), flags=re.MULTILINE)
+    return json.loads(text.strip())
 
 
 class Agent:
@@ -42,29 +51,38 @@ class Agent:
         )
         return self.chat(prompt)
 
-    def score(self, speaker_name: str, first: bool = False) -> str:
+    def score(self, speaker_name: str, first: bool = False) -> dict:
+        """Return {"score": int, "reasoning": str}."""
         if first:
             prompt = (
-                f"Give {speaker_name} an initial score out of 10 based on this first "
-                "impression. The score must be a whole number between 0 and 10 inclusive. "
-                "State the score and one sentence explaining your reasoning."
+                f"Give {speaker_name} an initial score out of 10 based on this first impression. "
+                "Respond with a JSON object in exactly this format:\n"
+                '{"score": 7, "reasoning": "One sentence explaining the score."}\n'
+                "The score must be a whole number between 0 and 10 inclusive."
             )
         else:
             prompt = (
-                f"Now give your current running score for {speaker_name} out of 10. "
-                "The score must be a whole number between 0 and 10 inclusive. "
+                f"Give your current running score for {speaker_name} out of 10. "
                 "This is a cumulative score reflecting their whole performance so far — "
-                "revise it up if they've strengthened their case, or down if they've been "
-                "rebutted or contradicted. State the score and one sentence explaining any change."
+                "revise it up if they've strengthened their case, or down if they've been rebutted. "
+                "Respond with a JSON object in exactly this format:\n"
+                '{"score": 7, "reasoning": "One sentence explaining any change."}\n'
+                "The score must be a whole number between 0 and 10 inclusive."
             )
-        return self.chat(prompt)
+        raw = self.chat(prompt, json_mode=True)
+        return _parse_json(raw)
 
-    def verdict(self, names: list[str]) -> str:
-        return self.chat(
-            f"The debate is over. Review the performances of {names[0]} and {names[1]} "
-            "across all their arguments. Give each a final overall score out of 10, "
-            "then declare a winner and explain in 2-3 sentences why they won."
+    def verdict(self, names: list[str]) -> dict:
+        """Return {"winner": str, "scores": {name: int, ...}, "reasoning": str}."""
+        prompt = (
+            f"The debate is over. Give final scores and declare a winner. "
+            f"Respond with a JSON object in exactly this format:\n"
+            f'{{"winner": "{names[0]}", "scores": {{"{names[0]}": 8, "{names[1]}": 6}}, '
+            f'"reasoning": "2-3 sentences explaining why the winner won."}}\n'
+            "All scores must be whole numbers between 0 and 10 inclusive."
         )
+        raw = self.chat(prompt, json_mode=True)
+        return _parse_json(raw)
 
     def think(self, opponent_message: str) -> str:
         prompt = (
@@ -78,13 +96,14 @@ class Agent:
     def respond(self) -> str:
         return self.chat("Now give your actual debate response, in character.")
 
-    def chat(self, message: str) -> str:
+    def chat(self, message: str, json_mode: bool = False) -> str:
         self._history.append({"role": "user", "content": message})
 
-        response = self._client.chat.completions.create(
-            model=self.model,
-            messages=self._history,
-        )
+        kwargs = dict(model=self.model, messages=self._history)
+        if json_mode:
+            kwargs["response_format"] = {"type": "json_object"}
+
+        response = self._client.chat.completions.create(**kwargs)
 
         reply = response.choices[0].message.content
         self._history.append({"role": "assistant", "content": reply})

@@ -34,10 +34,13 @@ class TerminalOutput:
 
         elif event.type == EventType.SCORE:
             target = event.metadata["target"]
-            self._print_score(event.speaker, target, event.content, color)
+            self._print_score(event.speaker, target, event.content, color,
+                              score=event.metadata.get("score"))
 
         elif event.type == EventType.VERDICT:
-            self._print_verdict(event.speaker, event.content, color)
+            self._print_verdict(event.speaker, event.content, color,
+                                winner=event.metadata.get("winner"),
+                                scores=event.metadata.get("scores"))
 
     def _print_header(self, event: DebateEvent):
         topic = event.metadata["topic"]
@@ -102,14 +105,15 @@ class TerminalOutput:
                     print(f"{indent}{line}")
             print()
 
-    def _print_score(self, judge: str, target: str, content: str, color):
-        prefix = f"{color}{Style.BRIGHT}[{judge} → {target}]{Style.RESET_ALL}"
-        leader_width = len(judge) + len(target) + 6
+    def _print_score(self, judge: str, target: str, content: str, color, score=None):
+        score_str = f" {Style.BRIGHT}{score}/10{Style.RESET_ALL}" if score is not None else ""
+        prefix = f"{color}{Style.BRIGHT}[{judge} → {target}]{Style.RESET_ALL}{score_str}"
+        leader_width = len(judge) + len(target) + 6 + (len(f" {score}/10") if score is not None else 0)
         indent = " " * leader_width
         wrap_width = self.line_width - leader_width
 
         first_line = True
-        for line in textwrap.wrap(" ".join(content.split()), width=wrap_width):
+        for line in textwrap.wrap(" ".join(content.split()), width=max(wrap_width, 20)):
             if first_line:
                 print(f"{prefix} {line}")
                 first_line = False
@@ -117,10 +121,19 @@ class TerminalOutput:
                 print(f"{indent}{line}")
         print()
 
-    def _print_verdict(self, judge: str, content: str, color):
+    def _print_verdict(self, judge: str, content: str, color, winner=None, scores=None):
         sep = color + Style.BRIGHT + "=" * 60 + Style.RESET_ALL
         print(f"{sep}")
         print(f"{color}{Style.BRIGHT}FINAL VERDICT — {judge}{Style.RESET_ALL}\n")
+        if winner:
+            winner_color = self._colors.get(winner, color)
+            print(f"{Style.BRIGHT}WINNER: {winner_color}{winner}{Style.RESET_ALL}\n")
+        if scores:
+            score_line = "  ".join(
+                f"{self._colors.get(n, Fore.WHITE)}{n}{Style.RESET_ALL} {Style.BRIGHT}{s}/10{Style.RESET_ALL}"
+                for n, s in scores.items()
+            )
+            print(f"{score_line}\n")
         for line in textwrap.wrap(" ".join(content.split()), width=self.line_width):
             print(line)
         print(f"\n{sep}\n")
