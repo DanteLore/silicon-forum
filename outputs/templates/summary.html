@@ -431,6 +431,63 @@ a.transcript-link:hover { color: #5694f1; text-decoration: underline; }
       </div>
       {% endif %}
 
+      <!-- Model performance (debater) -->
+      {% if stats.model_debaters %}
+      <div class="stats-block">
+        <h3>Model Performance (Debater)</h3>
+        <table>
+          <thead>
+            <tr><th>Model</th><th>n</th><th>Wins</th><th>Win%</th><th>Avg score</th></tr>
+          </thead>
+          <tbody>
+            {% for m in stats.model_debaters %}
+            <tr>
+              <td>{{ m.name }}</td>
+              <td class="n-label">{{ m.n }}</td>
+              <td>{{ m.wins }}</td>
+              <td>{% if m.win_rate is not none %}{{ (m.win_rate * 100) | round | int }}%{% else %}—{% endif %}</td>
+              <td>{{ m.avg_score if m.avg_score is not none else "—" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <!-- Model performance (judge) -->
+      {% if stats.model_judges %}
+      <div class="stats-block">
+        <h3>Model Performance (Judge)</h3>
+        <table>
+          <thead>
+            <tr><th>Model</th><th>n</th><th>Upheld</th><th>Rejected</th><th>Uphold%</th><th>Bias</th></tr>
+          </thead>
+          <tbody>
+            {% for m in stats.model_judges %}
+            <tr>
+              <td>{{ m.name }}</td>
+              <td class="n-label">{{ m.n }}</td>
+              <td>{{ m.upheld }}</td>
+              <td>{{ m.rejected }}</td>
+              <td>{% if m.uphold_rate is not none %}{{ (m.uphold_rate * 100) | round | int }}%{% else %}—{% endif %}</td>
+              <td>
+                {% if m.bias is not none %}
+                  {% if m.bias > 0.01 %}
+                    <span class="bias-pos">+{{ (m.bias * 100) | round | int }}%</span>
+                  {% elif m.bias < -0.01 %}
+                    <span class="bias-neg">{{ (m.bias * 100) | round | int }}%</span>
+                  {% else %}
+                    <span class="bias-neutral">~0%</span>
+                  {% endif %}
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
     </div><!-- /stats-grid -->
   </div><!-- /stats-section -->
   {% endif %}
