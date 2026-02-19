@@ -36,6 +36,8 @@ debates/                  YAML config files, one per debate topic
   immigration.yaml
   tax_the_rich.yaml
   gun_control.yaml
+  free_healthcare.yaml
+  break_up_big_tech.yaml
 
 results/                  Output directory — HTML transcripts and summary files (gitignored)
 ```
@@ -109,6 +111,8 @@ Current judge lineups:
 | immigration | Keiko (Sciences Po professor) | Barry (retired postal worker) | Rosa (community dev worker, immigrant) |
 | tax_the_rich | Claire (IFS economist) | Pat (middle manager) | Richard (retired accountant) |
 | gun_control | Miriam (retired federal judge) | Marcus (school teacher, Atlanta) | Sandy (Montana rancher) |
+| free_healthcare | Niamh (Trinity College health systems) | Derek (retired steelworker) | Fatima (pharmacist, Nigerian-born) |
+| break_up_big_tech | Pieter (Amsterdam competition law) | Donna (market trader, Birmingham) | Jin-ho (Korean startup founder) |
 
 ### YAML style rules
 
