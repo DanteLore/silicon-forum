@@ -69,6 +69,13 @@ class Debate:
             self._emit(EventType.PLAN, agent.name, agent.plan(self._topic))
 
     def _opening_statement(self) -> str:
+        self._emit(EventType.THINK, self._agent_a.name,
+                   self._agent_a.think_opening(
+                       self._topic,
+                       premise=self._premise,
+                       side=self._agent_a.side,
+                       opponent_name=self._agent_b.name,
+                   ))
         side_line = ""
         if self._agent_a.side and self._premise:
             label = "FOR" if self._agent_a.side == "for" else "AGAINST"

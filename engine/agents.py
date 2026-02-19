@@ -75,7 +75,7 @@ class Agent:
         raw = self.chat(prompt, json_mode=True)
         return _parse_json(raw)
 
-    def _extract_verdict_json(self, names: list[str]) -> dict:
+    def _extract_verdict_json(self, names: list[str], confirmed_winner: str | None = None) -> dict:
         """Ask the model to emit a structured verdict dict, retrying on bad output.
 
         Up to 3 attempts. Each retry tells the model exactly which field was wrong.
@@ -86,14 +86,19 @@ class Agent:
             f'{{"winner": "{names[0]}", '
             f'"scores": {{"{names[0]}": 8, "{names[1]}": 6}}}}'
         )
+        if confirmed_winner:
+            winner_constraint = (
+                f'The "winner" must be {confirmed_winner!r} — consistent with your deliberation above. '
+            )
+        else:
+            winner_constraint = f'The "winner" must be exactly {names[0]!r} or {names[1]!r}. '
         base_prompt = (
             f"Now express that verdict as a JSON object. "
             f"Output only the JSON — no other text — in exactly this format:\n"
             f"{example}\n"
-            f'The "winner" must be exactly {names[0]!r} or {names[1]!r}. '
+            f"{winner_constraint}"
             f'The "scores" dict must contain entries for both names. '
-            f"All scores must be whole numbers between 0 and 10. "
-            f"The winner must be the debater with the higher score."
+            f"All scores must be whole numbers between 0 and 10."
         )
 
         result: dict = {}
@@ -161,10 +166,18 @@ class Agent:
             f"use 'I', 'my', 'in my view'. Do not refer to yourself by name or in the third person."
         )
 
-        # Call 2 — extract structure from the deliberation; enforce score consistency
-        result = self._extract_verdict_json(names)
+        # Call 2 — pin the winner before JSON extraction to prevent deliberation/JSON flips
+        name_response = self.chat(
+            f"Based on your deliberation, who won? "
+            f"Reply with exactly one of these names and nothing else: "
+            f"{names[0]!r} or {names[1]!r}."
+        )
+        confirmed_winner = next((n for n in names if n in name_response), None)
 
-        # Call 3 — public announcement in character, shown in the verdict box
+        # Call 3 — extract structure from the deliberation with winner locked in
+        result = self._extract_verdict_json(names, confirmed_winner=confirmed_winner)
+
+        # Call 4 — public announcement in character, shown in the verdict box
         result["reasoning"] = self.chat(
             f"Now deliver your verdict to the debaters and audience, briefly. "
             f"State who won, what they did well, and what let the other side down. "
@@ -174,6 +187,23 @@ class Agent:
         )
         result["deliberation"] = deliberation   # returned for THINK emission
         return result
+
+    def think_opening(self, topic: str, premise: str = None,
+                      side: str = None, opponent_name: str = "") -> str:
+        side_line = ""
+        if side and premise:
+            label = "FOR" if side == "for" else "AGAINST"
+            side_line = f"You are arguing {label} the premise: \"{premise}\"\n\n"
+        prompt = (
+            f"The debate topic is: {topic}\n\n"
+            f"{side_line}"
+            f"Your opponent is {opponent_name}. "
+            "You are about to deliver your opening statement. "
+            "Privately consider: what is the strongest point to lead with? "
+            "How will you frame your position from the start? "
+            "Do not deliver your opening statement yet."
+        )
+        return self.chat(prompt)
 
     def think(self, opponent_message: str, final: bool = False) -> str:
         final_note = (
