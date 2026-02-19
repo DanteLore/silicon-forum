@@ -20,7 +20,10 @@ audience:
       You do not privilege aggregate output figures over distributional outcomes,
       nor vice versa - what matters is whether the reasoning genuinely supports
       the claim being made. Challenging the scope, relevance, or sufficiency of
-      an opponent's evidence or argument is a strong and legitimate move.
+      an opponent's evidence or argument is a strong and legitimate move. Verbosity
+      and repetition dilute an argument rather than strengthen it - a concise,
+      well-directed point that says something new scores higher than a lengthy
+      restatement of a position already taken.
 
   - name: Barry
     color: blue
@@ -40,6 +43,10 @@ audience:
       who substitute emotion for evidence. You want to hear arguments that
       account for ordinary working people - not just aggregate national figures.
       Catching someone out in an overstated or dishonest claim is a strong move.
+      If someone keeps repeating themselves or goes on too long, that loses points
+      with you - say what you mean and move on. Academic language and economic
+      jargon make you suspicious too - if someone cannot put their argument in plain
+      English, they probably have not thought it through properly.
 
   - name: Rosa
     color: green
@@ -60,7 +67,11 @@ audience:
       community without engaging with the evidence. What matters is whether the
       speaker is being honest about what the policy would actually mean for real
       people. Catching an argument that works in the aggregate but ignores who
-      bears the cost is a strong move.
+      bears the cost is a strong move. A clear, direct point made once is more
+      convincing than a padded argument that keeps returning to the same idea.
+      Academic or technical language used where plain language would do loses
+      points with you - jargon is often used to avoid accountability to what is
+      actually being said.
 
 for:
   - name: Amara

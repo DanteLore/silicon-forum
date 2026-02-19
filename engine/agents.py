@@ -50,7 +50,9 @@ class Agent:
             "suggest it? If they are challenging their opponent's evidence, is that challenge "
             "well-reasoned — and if so, credit it as a strong move in its own right. "
             "Note whether this argument advances their case or merely repeats a point they "
-            "have already made. If they cite specific figures or statistics, note whether "
+            "have already made. Note whether the response is concise - a tighter argument "
+            "that makes the point is stronger than a longer one that pads it out. "
+            "If they cite specific figures or statistics, note whether "
             "these are consistent with what they said in earlier turns. "
             "How effective is the rhetoric? Note strengths and weaknesses. Do not score yet. "
             "Write in the first person — use 'I', 'my'. Do not refer to yourself by name."
@@ -249,7 +251,8 @@ class Agent:
         return self.chat(
             instruction +
             "Speak in your own voice only — do not write stage directions, "
-            "do not write your opponent's lines, and do not present both sides."
+            "do not write your opponent's lines, and do not present both sides. "
+            "Respond in English only."
         )
 
     def chat(self, message: str, json_mode: bool = False) -> str:

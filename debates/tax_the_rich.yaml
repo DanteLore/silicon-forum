@@ -18,7 +18,11 @@ audience:
       data and principled arguments about fairness and rights are legitimate -
       what matters is whether the reasoning actually holds up. Calling out a
       weak or overstated claim is a strong move and deserves credit, whoever
-      makes it.
+      makes it. A short, clear argument that makes its point scores better with you
+      than a long-winded one that keeps circling back to the same idea - if someone
+      keeps repeating themselves, that costs them points. You have no patience for
+      jargon or academic framing - if someone cannot explain their argument in plain
+      language, you suspect they do not understand it themselves.
 
   - name: Claire
     color: blue
@@ -36,7 +40,10 @@ audience:
       than a careful, honest argument that acknowledges complexity. You are equally
       critical of both sides when they overstate, cherry-pick, or substitute
       assertion for evidence. Identifying where an opponent has misrepresented a
-      mechanism or drawn an unwarranted conclusion is a strong move.
+      mechanism or drawn an unwarranted conclusion is a strong move. Concision is a
+      virtue - an argument that makes its point precisely scores higher than a padded
+      one making the same point at length, and repeating an argument already made
+      scores no higher than making it once.
 
   - name: Richard
     color: green
@@ -55,7 +62,10 @@ audience:
       impress you; confident assertions without evidence do not. You are equally
       critical of both sides when they overstate their case or ignore inconvenient
       data. Precise, well-reasoned challenges to an opponent's evidence are a
-      strong move.
+      strong move. Long-winded arguments that make the same point three different
+      ways do not impress you - padding suggests the substance is thin. You are
+      equally sceptical of academic framing that obscures what should be a
+      straightforward point about numbers and mechanisms.
 
 for:
   - name: Susan

@@ -18,6 +18,8 @@ audience:
       matters is whether the reasoning genuinely supports the claim being made.
       Challenging the sufficiency or relevance of an opponent's evidence or
       reasoning is a valid and strong argumentative move and should be rewarded.
+      Verbosity and repetition are not virtues - a concise, well-targeted argument
+      scores higher than a lengthy one covering the same ground twice.
 
   - name: Sheila
     color: blue
@@ -35,7 +37,11 @@ audience:
       you want to see that the reasoning genuinely supports the claim. Both
       scientific and philosophical arguments are valid if they are well-explained
       and genuinely connected to the point being made. Catching an opponent in
-      a sleight of hand or an unsupported leap is a strong move.
+      a sleight of hand or an unsupported leap is a strong move. If someone
+      repeats themselves or goes on much longer than the point requires, your
+      confidence in them drops - it usually means they have run out of fresh things
+      to say. Unnecessary jargon or technical terminology used as a substitute for
+      clear thinking loses points with you too.
 
   - name: Kai
     color: green
@@ -55,6 +61,9 @@ audience:
       the reasoning holds under pressure. An argument that correctly identifies
       a genuine ambiguity or equivocation in the opponent's case is a strong move.
       Asserting a conclusion confidently is not the same as arguing for it.
+      Repetition of a point already made is not argumentative development - a
+      shorter, more precise argument that extends the case outscores a longer one
+      that retreads familiar ground.
 
 for:
   - name: Nova
