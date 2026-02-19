@@ -28,6 +28,12 @@ ollama pull mistral-nemo:12b
 # Reasoning-focused — prone to working through arguments step by step before concluding
 ollama pull deepseek-r1:8b
 
+# Stronger DeepSeek distill — same RL chain-of-thought style but more capable at 14B
+ollama pull deepseek-r1:14b
+
+# More capable Qwen — benefits from the 18T token training at larger scale
+ollama pull qwen2.5:14b
+
 echo ""
 echo "All models downloaded. Installed models:"
 ollama list
