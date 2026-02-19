@@ -49,6 +49,9 @@ class Agent:
             "If evidence is used, does it actually warrant the conclusion, or does it merely "
             "suggest it? If they are challenging their opponent's evidence, is that challenge "
             "well-reasoned — and if so, credit it as a strong move in its own right. "
+            "Note whether this argument advances their case or merely repeats a point they "
+            "have already made. If they cite specific figures or statistics, note whether "
+            "these are consistent with what they said in earlier turns. "
             "How effective is the rhetoric? Note strengths and weaknesses. Do not score yet. "
             "Write in the first person — use 'I', 'my'. Do not refer to yourself by name."
         )
@@ -129,17 +132,28 @@ class Agent:
 
             if (result.get("winner") in names
                     and all(n in result.get("scores", {}) for n in names)):
-                return result
+                break
 
-        # Fallback: derive winner from whatever scores we have
-        scores = result.get("scores", {})
-        if all(n in scores for n in names):
-            result["winner"] = max(names, key=lambda n: scores.get(n, 0))
         else:
-            result.setdefault("winner", names[0])
-            result.setdefault("scores", {n: 5 for n in names})
-        print(f"Warning: judge {self.name!r} produced a malformed verdict after 3 attempts; "
-              f"using fallback (winner={result['winner']!r})")
+            # Fallback: derive winner from whatever scores we have
+            scores = result.get("scores", {})
+            if all(n in scores for n in names):
+                result["winner"] = max(names, key=lambda n: scores.get(n, 0))
+            else:
+                result.setdefault("winner", names[0])
+                result.setdefault("scores", {n: 5 for n in names})
+            print(f"Warning: judge {self.name!r} produced a malformed verdict after 3 attempts; "
+                  f"using fallback (winner={result['winner']!r})")
+
+        # Fix score inversion: if the winner has a lower score than the loser, swap them.
+        # The winner name is already confirmed; the model sometimes keys the scores backwards.
+        winner = result.get("winner")
+        if winner and winner in names:
+            loser = next(n for n in names if n != winner)
+            scores = result.get("scores", {})
+            if scores.get(winner, 0) < scores.get(loser, 0):
+                scores[winner], scores[loser] = scores[loser], scores[winner]
+
         return result
 
     def verdict(self, names: list[str], premise: str = None,
@@ -227,7 +241,11 @@ class Agent:
                 "and make a clear case for why you have won this debate. "
             )
         else:
-            instruction = "Now give your actual debate response, in character. "
+            instruction = (
+                "Now give your actual debate response, in character. "
+                "You must directly engage with the specific point your opponent just made — "
+                "do not simply repeat a point you have already made earlier in this debate. "
+            )
         return self.chat(
             instruction +
             "Speak in your own voice only — do not write stage directions, "
