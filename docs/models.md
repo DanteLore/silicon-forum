@@ -1,6 +1,6 @@
 # Model Biographies
 
-The nine models currently installed in Ollama for Silicon Forum debates.
+Six models currently installed in Ollama for Silicon Forum debates. Two models were evaluated and removed - see their entries below.
 
 ---
 
@@ -20,7 +20,7 @@ The Llama lineage began when Meta released Llama 1 in early 2023, touching off t
 
 ---
 
-## mistral:7b
+## ~~mistral:7b~~ (removed)
 
 **Developer:** Mistral AI (Paris, France)
 **Released:** September 2023
@@ -33,6 +33,12 @@ Mistral AI was founded by former DeepMind and Meta researchers and quickly becam
 
 **Strengths:** Speed, efficiency, punches above its weight, strong at structured tasks.
 **Weaknesses:** Older model now; newer options have surpassed it on most benchmarks. Can be blunt.
+
+**Removed from Silicon Forum (February 2026).** Observed failures in debate testing:
+- Freezes on its opening framing after Turn 1 and repeats the same argument near-verbatim for every subsequent turn - useless as a debater once the round gets going.
+- Breaks judge persona mid-evaluation with "As an assistant, I don't have personal experiences or emotions", destroying the illusion required for the format.
+- Has credited debaters for citing specific evidence or statistics they never actually cited.
+Replaced by mistral-nemo:12b, which is substantially more capable at holding and developing a position.
 
 ---
 
@@ -68,7 +74,7 @@ Google's entry into the open-weight space was initially met with scepticism - th
 
 ---
 
-## qwen2.5:7b
+## ~~qwen2.5:7b~~ (removed)
 
 **Developer:** Alibaba Cloud (Qwen Team, China)
 **Released:** September 2024
@@ -81,6 +87,12 @@ The Qwen family has become a genuine contender that Western AI labs can no longe
 
 **Strengths:** Data-rich training, strong reasoning, excellent multilingual support, competitive on math/coding.
 **Weaknesses:** Some reports of verbose or over-qualified responses in conversational tasks.
+
+**Removed from Silicon Forum (February 2026).** Observed failures in debate testing:
+- Switches from English to Mandarin mid-sentence in public debate turns (e.g. "they could thrive if we简化税制，降低税率"), rendering output unusable for an English-language debate format.
+- Copies the opponent's most recent public statement verbatim into its own think box rather than reflecting on it, suggesting the model loses track of whose voice it is generating.
+- Chinese characters also appear in think boxes even after "Write in English only" instructions were added.
+The multilingual training that makes the model strong in other contexts is a liability here. The 14B variant (qwen2.5:14b) does not exhibit these problems and remains in use.
 
 ---
 

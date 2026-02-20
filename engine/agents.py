@@ -231,7 +231,8 @@ class Agent:
             f"Your opponent just said:\n\n\"{opponent_message}\"\n\n"
             "Before you respond, privately reflect: What did they get right or wrong? "
             "How does this shift the argument? How might the audience be reacting? "
-            f"Plan what you'll say next.{final_note} Do not give your debate response yet."
+            f"Plan what you'll say next.{final_note} Do not give your debate response yet. "
+            "Write in English only."
         )
         return self.chat(prompt)
 

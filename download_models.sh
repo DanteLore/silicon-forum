@@ -1,6 +1,6 @@
 #!/bin/bash
-# Downloads a selection of debate-capable models for the RX 7800 XT (16GB VRAM).
-# All models are 7-14B range and fit comfortably in VRAM at Q4 quantization.
+# Downloads debate-capable models for the RX 7800 XT (16GB VRAM).
+# All models are 8-14B range and fit comfortably in VRAM at Q4 quantization.
 # Each has a distinct rhetorical character suited to different agent personalities.
 
 set -e
@@ -10,14 +10,8 @@ echo "Downloading debate models..."
 # Current default — solid all-rounder, good at following persona instructions
 ollama pull llama3.1:8b
 
-# Punchy and direct, tends toward confident assertions — good for provocateurs
-ollama pull mistral:7b
-
 # Analytical and structured, builds arguments methodically — good for academics
 ollama pull gemma2:9b
-
-# Precise and concise, different cultural framing — good for contrarian viewpoints
-ollama pull qwen2.5:7b
 
 # Microsoft's model — rigorous, prefers logical chains over rhetoric — good for engineers
 ollama pull phi4
