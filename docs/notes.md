@@ -41,6 +41,29 @@ verbatim into its own think box rather than reflecting on it. Appears to lose
 track of whose voice it is generating.
 **Fix:** Model removed from the project.
 
+### deepseek-r1:8b - verdict contradicts deliberation
+**What happened:** As a judge, the model's think box correctly identified the
+winner ("Aoife won hands down, Carlos closer to 5") but the final JSON output
+declared the opposite result - wrong debater as winner with inverted scores.
+The existing score-inversion fix does not catch this because the scores in the
+JSON were internally consistent (winner had the higher score); it was the winner
+identity itself that was wrong. Root cause: the 8B distill lacks the capacity
+to keep its reasoning chain and its output generation properly coupled.
+**Fix:** Model removed from the project. deepseek-r1:14b does not exhibit this.
+
+### deepseek-r1:8b - flat scoring with no differentiation
+**What happened:** As a judge, assigned 7/10 to both debaters on every single
+running-score call throughout the debate, regardless of argument quality. No
+differentiation between a strong turn and a weak one.
+**Fix:** Model removed from the project.
+
+### deepseek-r1:8b - mechanical bloated think boxes
+**What happened:** Each judge evaluation produced 400-600 words of numbered
+analysis (Coherence, Evidence, Advancing, Conciseness, Rhetoric) with no
+genuine evaluative signal - a template being filled in rather than real
+deliberation.
+**Fix:** Model removed from the project.
+
 ---
 
 ## Engine bugs (fixed)

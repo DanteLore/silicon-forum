@@ -19,9 +19,6 @@ ollama pull phi4
 # Larger Mistral — more nuanced than mistral:7b, better at holding complex positions
 ollama pull mistral-nemo:12b
 
-# Reasoning-focused — prone to working through arguments step by step before concluding
-ollama pull deepseek-r1:8b
-
 # Stronger DeepSeek distill — same RL chain-of-thought style but more capable at 14B
 ollama pull deepseek-r1:14b
 

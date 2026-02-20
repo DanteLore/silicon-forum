@@ -1,6 +1,6 @@
 # Model Biographies
 
-Six models currently installed in Ollama for Silicon Forum debates. Two models were evaluated and removed - see their entries below.
+Six models currently installed in Ollama for Silicon Forum debates. Three models were evaluated and removed - see their entries below.
 
 ---
 
@@ -112,7 +112,7 @@ The result is a model that performs remarkably well on reasoning and STEM benchm
 
 ---
 
-## deepseek-r1:8b
+## ~~deepseek-r1:8b~~ (removed)
 
 **Developer:** DeepSeek (Hangzhou, China)
 **Released:** January 2025
@@ -127,6 +127,13 @@ The 8B distilled version retains much of R1's characteristic "thinking out loud"
 
 **Strengths:** Exceptional reasoning depth, trained explicitly on chain-of-thought, strong at structured argument.
 **Weaknesses:** Can over-think simple questions; the extended reasoning style may produce longer, more meandering responses than the debate format rewards.
+
+**Removed from Silicon Forum (February 2026).** Observed failures as a judge:
+- Verdict contradicts deliberation: the think box correctly identifies the winner ("Aoife won hands down, Carlos closer to 5") but the final JSON inverts the result, declaring the wrong debater winner with higher scores. This is a model capacity ceiling - the chain-of-thought reasoning and the output generation are not properly coupled at 8B.
+- Completely flat scoring: assigned 7/10 to both debaters every single turn across the full debate, with no differentiation regardless of argument quality.
+- Mechanical, bloated think boxes: 400-600 words of numbered analysis per turn (Coherence, Evidence, Advancing, Conciseness, Rhetoric) with no genuine evaluative signal.
+- Evidence criticism dominant: defaults to "lacks hard data" as the primary criticism despite judging_criteria updates explicitly de-emphasising evidence requirements.
+Replaced by deepseek-r1:14b, which exhibits none of these failure modes.
 
 ---
 
