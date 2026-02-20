@@ -109,7 +109,11 @@ def main():
     ]
 
     for run_num in range(1, args.count + 1):
-        row = run_one(run_num, args.count, config, run_dir, config_stem, pick)
+        try:
+            row = run_one(run_num, args.count, config, run_dir, config_stem, pick)
+        except Exception as e:
+            print(f"\n[Run {run_num} failed: {e}] Skipping.\n")
+            continue
         for out in stats_outputs:
             out.add_row(row)
 
