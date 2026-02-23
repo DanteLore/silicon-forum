@@ -25,6 +25,15 @@ ollama pull deepseek-r1:14b
 # More capable Qwen — benefits from the 18T token training at larger scale
 ollama pull qwen2.5:14b
 
+# Gemma 3 — improved instruction following over Gemma 2; QAT training maintains quality at Q4
+ollama pull gemma3:12b
+
+# Qwen 3 — explicitly trained for multi-turn dialogue and roleplay; use non-thinking mode for debate
+ollama pull qwen3:14b
+
+# OpenAI's first open-weight model since GPT-2; MoE architecture, 14GB at MXFP4, fits in 16GB VRAM
+ollama pull gpt-oss:20b
+
 echo ""
 echo "All models downloaded. Installed models:"
 ollama list

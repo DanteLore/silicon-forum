@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:dantelore.com)"
+      "WebFetch(domain:dantelore.com)",
+      "WebFetch(domain:ollama.com)"
     ]
   }
 }

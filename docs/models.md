@@ -1,6 +1,21 @@
 # Model Biographies
 
-Six models currently installed in Ollama for Silicon Forum debates. Three models were evaluated and removed - see their entries below.
+Nine models currently installed in Ollama for Silicon Forum debates. Three models were evaluated and removed - see their entries below.
+
+| Model | Size | Released | Developer | Origin |
+|---|---|---|---|---|
+| llama3.1:8b | 8B | July 2024 | Meta AI | 🇺🇸 |
+| mistral-nemo:12b | 12B | July 2024 | Mistral AI / NVIDIA | 🇫🇷 |
+| gemma2:9b | 9B | June 2024 | Google DeepMind | 🇺🇸 |
+| gemma3:12b | 12B | March 2025 | Google DeepMind | 🇺🇸 |
+| phi4:latest | 14B | December 2024 | Microsoft Research | 🇺🇸 |
+| deepseek-r1:14b | 14B | January 2025 | DeepSeek | 🇨🇳 |
+| qwen2.5:14b | 14B | September 2024 | Alibaba Cloud | 🇨🇳 |
+| qwen3:14b | 14B | April 2025 | Alibaba Cloud | 🇨🇳 |
+| gpt-oss:20b | 20B | August 2025 | OpenAI | 🇺🇸 |
+| ~~mistral:7b~~ | 7B | September 2023 | Mistral AI | 🇫🇷 |
+| ~~qwen2.5:7b~~ | 7B | September 2024 | Alibaba Cloud | 🇨🇳 |
+| ~~deepseek-r1:8b~~ | 8B | January 2025 | DeepSeek | 🇨🇳 |
 
 ---
 
@@ -71,6 +86,22 @@ Google's entry into the open-weight space was initially met with scepticism - th
 
 **Strengths:** Strong reasoning for its size, clean and coherent outputs, good instruction following.
 **Weaknesses:** Tends toward caution and balance; may struggle to commit to a position with genuine conviction.
+
+---
+
+## gemma3:12b
+
+**Developer:** Google DeepMind
+**Released:** March 2025
+**Parameters:** 12 billion
+**Architecture:** Based on Gemini research; quantization-aware training (QAT) for maintained quality at lower bit widths
+
+Gemma 3 is Google DeepMind's third-generation open-weight model family and a significant step forward from Gemma 2 in instruction following quality and conversational naturalness. The 12B variant sits in the middle of the family alongside a 4B and a 27B, and benefits from quantization-aware training - meaning the model is trained with quantization in mind rather than quantized after the fact, which preserves output quality at the Q4 precision used for local inference more effectively than competitors.
+
+Community reception has been strongly positive, particularly for instruction-following tasks. At approximately 10GB VRAM at Q4, the 12B fits comfortably on a 16GB card with headroom to spare. It is widely regarded as one of the best open-weight conversational models at its size class released to date.
+
+**Strengths:** Strong instruction following and conversational fluency; QAT training maintains quality at Q4 quantization; fits comfortably in 16GB VRAM.
+**Weaknesses:** Safety training can cause frame-breaks when personas are strongly partisan or confrontational - the model may step outside character to add disclaimers. Worth testing specific persona assignments before committing.
 
 ---
 
@@ -166,3 +197,35 @@ In practice, Qwen 2.5 14B is competitive with models significantly larger. It is
 
 **Strengths:** Data-rich training pays off at this scale; strong reasoning consistency, good at holding and developing a position across turns.
 **Weaknesses:** Can be overly qualified in conversational registers; occasionally verbose when a direct answer would serve better.
+
+---
+
+## qwen3:14b
+
+**Developer:** Alibaba Cloud (Qwen Team, China)
+**Released:** April 2025
+**Parameters:** 14 billion
+**Architecture:** Decoder-only transformer with hybrid thinking/non-thinking mode
+
+Qwen 3 is Alibaba's third-generation open-weight model family and a marked improvement over Qwen 2.5 in conversational quality and instruction following. The defining feature of the Qwen 3 family is a hybrid thinking mode: the model can switch between a deliberate chain-of-thought reasoning mode - producing internal `<think>` blocks before answering - and a direct non-thinking mode for fast, conversational responses. For debate roleplay, non-thinking mode is the appropriate setting; it keeps responses direct and in character rather than producing verbose internal monologue.
+
+At 14B, Qwen 3 performs comparably to much larger Qwen 2.5 models on reasoning benchmarks while offering better conversational naturalness. The training corpus includes explicit focus on multi-turn dialogue, roleplay, and instruction following - making it well suited to the debate format. At approximately 9.3GB at Q4, it fits comfortably in 16GB VRAM alongside a second model.
+
+**Strengths:** Explicitly trained for multi-turn dialogue and roleplay; non-thinking mode produces direct, character-consistent responses; strong instruction following at a competitive size.
+**Weaknesses:** Thinking mode is on by default in some configurations and produces `<think>` blocks that must be stripped or disabled; same Chinese-language training provenance as the qwen2.5 family, though the larger model handles English robustly.
+
+---
+
+## gpt-oss:20b
+
+**Developer:** OpenAI
+**Released:** August 2025
+**Parameters:** 20 billion (mixture-of-experts architecture)
+**Architecture:** Mixture-of-experts; MXFP4 quantization; 128K context window
+
+GPT-OSS is OpenAI's first open-weight model release since GPT-2 in 2019 - a significant moment given that OpenAI had been exclusively closed-weight for six years while the open-source ecosystem built around Meta, Google, and Mistral. The model comes in two sizes: a 120B variant requiring an 80GB GPU, and the 20B variant used here, which fits in 16GB VRAM through MXFP4 quantization of its mixture-of-experts weights.
+
+The mixture-of-experts architecture is notable: unlike the dense transformers used by most other models in this pool, a MoE model activates only a subset of its parameters per token, which allows a larger total parameter count to be packed into a given memory budget without proportional inference cost. The 20B figure refers to the active parameters; the total model is larger. OpenAI partnered with Ollama for day-one availability, and the 20B is explicitly positioned for agentic tasks and instruction following at consumer hardware scale. Performance is described as comparable to slightly older ChatGPT models - broadly GPT-4o-mini class - which would make it the highest-capability model in this pool by a noticeable margin.
+
+**Strengths:** Highest baseline capability in the pool; 128K context window far exceeds others; OpenAI's instruction-following alignment tuning; MoE architecture enables strong output within the 16GB constraint.
+**Weaknesses:** At 14GB on disk the VRAM headroom on a 16GB card is tight - less margin than most other models here; MoE inference can be slower than equivalently-sized dense models on consumer hardware; less community testing data available given recent release.
