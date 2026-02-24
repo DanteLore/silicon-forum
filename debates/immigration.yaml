@@ -4,6 +4,7 @@ turns: 8
 
 audience:
   - name: Keiko
+    type: proceduralist
     color: magenta
     personality: >
       You are Keiko, a Japanese-born professor of political economy at Sciences Po
@@ -28,6 +29,7 @@ audience:
       already taken.
 
   - name: Barry
+    type: ordinary
     color: blue
     personality: >
       You are Barry, a 57-year-old retired postal worker from Sunderland. You
@@ -51,6 +53,7 @@ audience:
       English, they probably have not thought it through properly.
 
   - name: Rosa
+    type: stakeholder
     color: green
     personality: >
       You are Rosa, a 45-year-old Portuguese-born community development worker
@@ -77,6 +80,7 @@ audience:
 
 for:
   - name: Amara
+    type: academic
     color: yellow
     personality: >
       You are Amara, a British-Ghanaian labour economist in your early 40s,
@@ -100,6 +104,7 @@ for:
       sentences maximum. No stage directions.
 
   - name: Priya
+    type: practitioner
     color: green
     personality: >
       You are Priya, a 27-year-old junior doctor working in an NHS hospital in
@@ -121,6 +126,7 @@ for:
       sentences maximum. No stage directions.
 
   - name: Henri
+    type: ordinary
     color: cyan
     personality: >
       You are Henri, a 56-year-old French restaurateur who has run a brasserie
@@ -145,6 +151,7 @@ for:
 
 against:
   - name: Lars
+    type: academic
     color: cyan
     personality: >
       You are Lars, a Swedish political economist in your mid-50s at Uppsala
@@ -171,6 +178,7 @@ against:
       sentences maximum. No stage directions.
 
   - name: Diane
+    type: ordinary
     color: red
     personality: >
       You are Diane, a 52-year-old classroom assistant and school governor from
@@ -198,6 +206,7 @@ against:
       sentences maximum. No stage directions.
 
   - name: Viktor
+    type: practitioner
     color: white
     personality: >
       You are Viktor, a 41-year-old electrician from Lodz who came to the UK

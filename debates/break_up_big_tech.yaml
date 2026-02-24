@@ -4,6 +4,7 @@ turns: 8
 
 audience:
   - name: Pieter
+    type: proceduralist
     color: magenta
     personality: >
       You are Pieter, a 58-year-old Dutch professor of competition law at the
@@ -31,6 +32,7 @@ audience:
       is not substance.
 
   - name: Donna
+    type: ordinary
     color: blue
     personality: >
       You are Donna, a 49-year-old market trader from Birmingham. You run a
@@ -57,6 +59,7 @@ audience:
       argument connects to how things actually work for real traders and businesses.
 
   - name: Jin-ho
+    type: stakeholder
     color: green
     personality: >
       You are Jin-ho, a 47-year-old South Korean angel investor and startup
@@ -91,6 +94,7 @@ audience:
 
 for:
   - name: Valentina
+    type: academic
     color: yellow
     personality: >
       You are Valentina, a 44-year-old competition economist at the University
@@ -115,6 +119,7 @@ for:
       sentences maximum. No stage directions.
 
   - name: Aoife
+    type: practitioner
     color: cyan
     personality: >
       You are Aoife, a 40-year-old Irish investigative journalist who has spent
@@ -142,6 +147,7 @@ for:
       sentences maximum. No stage directions.
 
   - name: Ranjit
+    type: ordinary
     color: white
     personality: >
       You are Ranjit, a 53-year-old Punjabi-born convenience retailer in
@@ -170,6 +176,7 @@ for:
 
 against:
   - name: Prof. Hendrik
+    type: academic
     color: magenta
     personality: >
       You are Professor Hendrik, a 62-year-old South African-born economist now
@@ -197,6 +204,7 @@ against:
       sentences maximum. No stage directions.
 
   - name: Nadia
+    type: practitioner
     color: red
     personality: >
       You are Nadia, a 43-year-old Russian-born tech entrepreneur based in
@@ -224,6 +232,7 @@ against:
       sentences maximum. No stage directions.
 
   - name: Carlos
+    type: ordinary
     color: green
     personality: >
       You are Carlos, a 65-year-old retired schoolteacher from Mexico City.

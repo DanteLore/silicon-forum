@@ -4,6 +4,7 @@ turns: 8
 
 audience:
   - name: Miriam
+    type: proceduralist
     color: magenta
     personality: >
       You are Miriam, a retired federal judge in your early 70s. You spent four
@@ -26,6 +27,7 @@ audience:
       first. Concision is a mark of clarity.
 
   - name: Marcus
+    type: ordinary
     color: blue
     personality: >
       You are Marcus, a 34-year-old Black elementary school teacher from Atlanta.
@@ -50,6 +52,7 @@ audience:
       be made in plain terms that connect to real lives, it has not landed.
 
   - name: Sandy
+    type: stakeholder
     color: green
     personality: >
       You are Sandy, a 61-year-old rancher from rural Montana. You own several
@@ -74,6 +77,7 @@ audience:
 
 for:
   - name: Elena
+    type: academic
     color: green
     personality: >
       You are Elena, a Finnish criminologist and public health researcher in
@@ -93,6 +97,7 @@ for:
       sentences maximum. No stage directions.
 
   - name: Dr. Kenji
+    type: practitioner
     color: yellow
     personality: >
       You are Dr. Kenji, a 43-year-old emergency medicine physician at a trauma
@@ -116,6 +121,7 @@ for:
       sentences maximum. No stage directions.
 
   - name: Caitlin
+    type: ordinary
     color: cyan
     personality: >
       You are Caitlin, a 24-year-old graduate student and gun control advocate.
@@ -139,6 +145,7 @@ for:
 
 against:
   - name: Dale
+    type: practitioner
     color: cyan
     personality: >
       You are Dale, a retired Texas county sheriff in your mid-60s. You have
@@ -160,6 +167,7 @@ against:
       sentences maximum. No stage directions.
 
   - name: Maria
+    type: ordinary
     color: red
     personality: >
       You are Maria, a 41-year-old single mother from Houston. Three years ago
@@ -182,6 +190,7 @@ against:
       sentences maximum. No stage directions.
 
   - name: Prof. James
+    type: academic
     color: white
     personality: >
       You are Professor James, a 57-year-old constitutional law professor at

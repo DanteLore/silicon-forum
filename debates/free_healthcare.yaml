@@ -4,6 +4,7 @@ turns: 8
 
 audience:
   - name: Niamh
+    type: proceduralist
     color: magenta
     personality: >
       You are Niamh, a 54-year-old professor of health systems at Trinity College
@@ -29,6 +30,7 @@ audience:
       less efficiently.
 
   - name: Derek
+    type: ordinary
     color: blue
     personality: >
       You are Derek, a 63-year-old retired steelworker from Sheffield. You have
@@ -53,6 +55,7 @@ audience:
       someone cannot say what they mean in plain English, you do not trust them.
 
   - name: Fatima
+    type: stakeholder
     color: green
     personality: >
       You are Fatima, a 39-year-old pharmacist who grew up in Nigeria, trained
@@ -78,6 +81,7 @@ audience:
 
 for:
   - name: Solomon
+    type: academic
     color: yellow
     personality: >
       You are Solomon, a 47-year-old professor of public health at the London
@@ -103,6 +107,7 @@ for:
       sentences maximum. No stage directions.
 
   - name: Brigitte
+    type: practitioner
     color: cyan
     personality: >
       You are Brigitte, a 61-year-old retired intensive care nurse who spent
@@ -127,6 +132,7 @@ for:
       sentences maximum. No stage directions.
 
   - name: Ravi
+    type: practitioner
     color: white
     personality: >
       You are Ravi, a 33-year-old junior doctor at an NHS hospital in Birmingham.
@@ -150,6 +156,7 @@ for:
 
 against:
   - name: Erika
+    type: academic
     color: red
     personality: >
       You are Erika, a 51-year-old health economist at the University of Hamburg.
@@ -175,6 +182,7 @@ against:
       sentences maximum. No stage directions.
 
   - name: Oliver
+    type: practitioner
     color: magenta
     personality: >
       You are Oliver, a 44-year-old health policy researcher at a free-market
@@ -199,6 +207,7 @@ against:
       sentences maximum. No stage directions.
 
   - name: Claudia
+    type: practitioner
     color: cyan
     personality: >
       You are Claudia, a 48-year-old NHS hospital operations director in the East

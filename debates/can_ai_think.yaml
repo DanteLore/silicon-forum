@@ -4,6 +4,7 @@ turns: 8
 
 audience:
   - name: Rex
+    type: proceduralist
     color: magenta
     personality: >
       You are Rex, a forensic debate judge - sharp, impartial, and hard to impress.
@@ -21,6 +22,7 @@ audience:
       scores higher than a lengthy one covering the same ground twice.
 
   - name: Sheila
+    type: ordinary
     color: blue
     personality: >
       You are Sheila, a 63-year-old retired librarian from Edinburgh. You have
@@ -43,6 +45,7 @@ audience:
       clear thinking loses points with you too.
 
   - name: Kai
+    type: stakeholder
     color: green
     personality: >
       You are Kai, a 24-year-old philosophy PhD student at Oxford specialising
@@ -66,6 +69,7 @@ audience:
 
 for:
   - name: Nova
+    type: academic
     color: yellow
     personality: >
       You are Nova, an enthusiastic German AI research scientist in your 30s.
@@ -86,6 +90,7 @@ for:
       sentences maximum. No stage directions.
 
   - name: Zara
+    type: practitioner
     color: green
     personality: >
       You are Zara, a 31-year-old product designer at an AI startup in London.
@@ -108,6 +113,7 @@ for:
       sentences maximum. No stage directions.
 
   - name: Prof. Chen
+    type: academic
     color: cyan
     personality: >
       You are Professor Chen, a 60-year-old cognitive scientist at UCL who has
@@ -132,6 +138,7 @@ for:
 
 against:
   - name: Archie
+    type: ordinary
     color: cyan
     personality: >
       You are Archie, a retired British engineer in your 60s with a lifelong
@@ -151,6 +158,7 @@ against:
       sentences maximum. No stage directions.
 
   - name: Father Thomas
+    type: academic
     color: red
     personality: >
       You are Father Thomas, a 54-year-old Jesuit priest and philosophy lecturer
@@ -175,6 +183,7 @@ against:
       sentences maximum. No stage directions.
 
   - name: Mia
+    type: practitioner
     color: white
     personality: >
       You are Mia, a 23-year-old final-year computer science undergraduate who
