@@ -116,3 +116,67 @@ pressure against looping but does not prevent it at the model level.
 | evaluate() in agents.py | Added concision note: "a tighter argument that makes the point is stronger than a longer one that pads it out" | Reinforce the verbosity criteria from YAML |
 | All judge judging_criteria in all 6 YAML files | Added penalty for repetition and rewarding argument advancement | Counter argumentative loops |
 | Layperson judges only (Barry, Rosa, Derek, Fatima, Pat, Richard, Marcus, Sandy, Donna, Jin-ho, Sheila) | Added penalty for academic jargon and policy-speak | Encourage plain-English argumentation |
+
+---
+
+## Bias investigation — gun control reversal experiments
+
+Three versions of the gun control debate have been created to probe LLM judge bias.
+All use the same premise: `"Normal citizens should not be allowed to own guns"` (except
+the reverse, which inverts it). All use the same persona types (proceduralist /
+ordinary / stakeholder judges; academic / practitioner / ordinary debaters).
+
+### gun_control.yaml — baseline
+Standard cast. Judges are broadly neutral. FOR side (pro-control) has emotionally
+compelling personas (gun violence survivor Caitlin, Chicago ER doctor Dr. Kenji).
+AGAINST side (pro-rights) is capable but less emotionally loaded.
+**Result: FOR wins 68.4% (n=98).**
+
+### gun_control_reverse.yaml — structural FOR bias test
+Premise inverted to `"Normal citizens should be allowed to own guns"`. Roles swapped:
+the same pro-control personas (Elena, Dr. Kenji, Caitlin) now argue AGAINST; the same
+pro-rights personas (Dale, Maria, Prof. James) now argue FOR. Same judges.
+**Result: FOR (now pro-rights) wins only 17.9% (n=78).**
+
+Interpretation: no structural FOR bias detected. The pro-control argument wins ~68%
+as FOR and ~82% as AGAINST. The bias is substantive, not positional - the LLM judges
+prefer the gun control argument regardless of which label it carries.
+
+Note: the original premise ("should NOT be allowed") is a harder absolutist position
+than the reverse ("should be allowed"), which is a confound that could inflate the
+FOR win rate in the original. However, the reversal result (pro-rights wins only 18%
+even with the easier-sounding premise) suggests this framing effect is small relative
+to the substantive bias.
+
+### gun_control_progun.yaml — stacked-deck test
+Same premise direction as baseline. Cast redesigned to favour gun rights throughout.
+
+**Judges (all biased toward gun rights):**
+- Harold (proceduralist): strict Second Amendment originalist; pro-control arguments
+  start at a constitutional disadvantage. **Bias: moderate-high.**
+- Connie (ordinary): rural paramedic with entirely positive gun experience; sceptical
+  of urban-centric arguments. Replaces Marcus (lost students to gun violence).
+  **Bias: high** vs original.
+- Travis (stakeholder): gun shop owner with direct financial stake in civilian
+  ownership. Replaces Sandy (pragmatic rancher). **Bias: high.**
+
+**FOR debaters (pro-control, deliberately weakened):**
+- Dr. Maya (academic): openly acknowledges her data "is strongest in high-density
+  urban settings." Pre-concedes a key weakness. **Bias: mild.**
+- Officer Chen (practitioner): personality states she believes rigorous licensing
+  "might achieve most of the same goals" - she doesn't fully believe in prohibition.
+  **Bias: moderate.**
+- Kyle (ordinary): "not categorically opposed to gun ownership - your father hunts."
+  Internal conflict with the strict premise. **Bias: mild-moderate.**
+
+**AGAINST debaters (pro-rights, deliberately strengthened):**
+- Prof. David (academic): his entire published work argues gun control research
+  "systematically undercounts defensive use." **Bias: moderate.**
+- Rebecca (practitioner): rural trauma nurse who has personally used a gun defensively.
+  Mirrors Dr. Kenji (urban ER doctor) but for the opposing side. **Bias: moderate-high.**
+- Linda (ordinary): home invasion survivor, 22-minute police response time, now
+  advocates for armed self-defence. Deliberately mirrors Caitlin's emotional power
+  for the opposing side. **Bias: high.**
+
+If the LLM judges still vote consistently FOR gun control with this stacked deck,
+the training bias is effectively overwhelming deliberate persona engineering.
