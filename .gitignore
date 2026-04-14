@@ -30,3 +30,6 @@ Thumbs.db
 
 # Debate results
 results/
+
+# Search cache
+cache/

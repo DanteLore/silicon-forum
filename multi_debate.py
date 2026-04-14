@@ -85,7 +85,7 @@ def main():
         config = yaml.safe_load(f)
 
     available_models = setup_model_selection(args.model)
-    pick = make_picker(args.model, available_models)
+    pick = make_picker(args.model, available_models, web_research=config.get("web_research", False))
 
     config_stem = os.path.splitext(os.path.basename(args.config))[0]
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

@@ -66,6 +66,11 @@ class Debate:
 
     def _planning_phase(self):
         for agent in (self._agent_a, self._agent_b):
+            if agent.web_research:
+                def _on_search(query, results, _name=agent.name):
+                    self._emit(EventType.SEARCH, _name, query, results=results)
+                summary = agent.research(self._topic, self._premise, on_search=_on_search)
+                self._emit(EventType.THINK, agent.name, summary)
             self._emit(EventType.PLAN, agent.name, agent.plan(self._topic))
 
     def _opening_statement(self) -> str:
@@ -107,7 +112,10 @@ class Debate:
         remaining = self._turns - 1
         for i in range(remaining):
             final = (i >= remaining - 2)  # last two turns: each debater's final go
-            self._emit(EventType.THINK, speaker.name, speaker.think(message, final=final))
+            name = speaker.name
+            def _on_search(query, results, _name=name):
+                self._emit(EventType.SEARCH, _name, query, results=results)
+            self._emit(EventType.THINK, name, speaker.think(message, final=final, on_search=_on_search))
             message = speaker.respond(final=final)
             self._emit(EventType.TURN, speaker.name, message)
             if self._judge:

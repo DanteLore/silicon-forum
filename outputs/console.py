@@ -26,6 +26,11 @@ class TerminalOutput:
             self._seen_plan = True
             self._print_thought(event.speaker, event.content, color)
 
+        elif event.type == EventType.SEARCH:
+            self._seen_plan = True
+            self._print_search(event.speaker, event.content,
+                               event.metadata.get("results", []), color)
+
         elif event.type == EventType.TURN:
             if self._seen_plan and not self._debate_started:
                 print(f"{Style.BRIGHT}{'— ' * 30}{Style.RESET_ALL}\n")
@@ -80,6 +85,18 @@ class TerminalOutput:
         for text in filter(None, texts):
             for line in textwrap.wrap(" ".join(text.split()), width=wrap_width):
                 print(f"{Style.DIM}{indent}{line}{Style.RESET_ALL}")
+
+    def _print_search(self, name: str, query: str, results: list, color):
+        prefix = f"{color}{Style.DIM}[{name} searches]{Style.RESET_ALL}"
+        print(f"{Style.DIM}{prefix} \"{query}\"{Style.RESET_ALL}")
+        indent = " " * 4
+        for r in results:
+            title = r.get("title", "")
+            url = r.get("url", "")
+            print(f"{Style.DIM}{indent}• {title}{Style.RESET_ALL}")
+            if url:
+                print(f"{Style.DIM}{indent}  {url}{Style.RESET_ALL}")
+        print()
 
     def _print_thought(self, name: str, content: str, color):
         prefix = f"{color}{Style.DIM}[{name} thinks]{Style.RESET_ALL}"

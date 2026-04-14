@@ -23,7 +23,7 @@ with open(args.config, "r") as f:
     config = yaml.safe_load(f)
 
 _available_models = setup_model_selection(args.model)
-_pick = make_picker(args.model, _available_models)
+_pick = make_picker(args.model, _available_models, web_research=config.get("web_research", False))
 
 debater_for     = _pick(config["for"],      side="for")
 debater_against = _pick(config["against"],  side="against")

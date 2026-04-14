@@ -20,7 +20,7 @@ def setup_model_selection(fixed_model: str | None) -> list[str]:
     return available
 
 
-def make_picker(fixed_model: str | None, available_models: list[str]):
+def make_picker(fixed_model: str | None, available_models: list[str], web_research: bool = False):
     """Return a _pick(cfg_list, side=None) -> Agent closure.
 
     Each call picks a random persona from cfg_list and assigns a model:
@@ -31,8 +31,12 @@ def make_picker(fixed_model: str | None, available_models: list[str]):
         cfg = dict(random.choice(cfg_list))
         if side is not None:
             cfg["side"] = side
+            if web_research:
+                cfg["web_research"] = True
         if fixed_model:
             cfg["model"] = fixed_model
+        elif cfg.get("model"):
+            pass  # respect per-agent model from YAML
         elif available_models:
             cfg["model"] = random.choice(available_models)
         else:

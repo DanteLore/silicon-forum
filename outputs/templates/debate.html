@@ -306,6 +306,66 @@ details[open].thought summary::before { content: "▼  "; }
 .premise-upheld   { background: #e8f5e9; color: #2e7d32; }
 .premise-rejected { background: #fce4ec; color: #c62828; }
 
+/* ── Search results ──────────────────────────────────── */
+details.search-block {
+    background: #f9f9ff;
+    border: 1px solid #e8e8f5;
+    border-radius: 3px;
+    padding: 7px 14px;
+}
+
+details.search-block summary {
+    cursor: pointer;
+    font-size: 13px;
+    color: #999;
+    font-style: italic;
+    list-style: none;
+    user-select: none;
+}
+
+details.search-block summary::-webkit-details-marker { display: none; }
+details.search-block summary::before { content: "▶  "; font-size: 10px; }
+details[open].search-block summary::before { content: "▼  "; }
+
+.search-query {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #e8e8f5;
+    font-size: 12px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.search-results {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.search-results li {
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.search-results a {
+    color: #5badf0;
+    text-decoration: none;
+}
+
+.search-results a:hover { text-decoration: underline; }
+
+.search-result-url {
+    display: block;
+    color: #bbb;
+    font-size: 11px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    margin-top: 1px;
+}
+
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 540px) {
     .debate { padding: 0 20px 60px; }
@@ -356,7 +416,24 @@ details[open].thought summary::before { content: "▼  "; }
 
     {% for event in events %}
 
-    {% if event.type in ("plan", "think") %}
+    {% if event.type == "search" %}
+    <details class="search-block">
+      <summary>
+        <span style="color: {{ event.color }}">{{ event.speaker }}</span>
+        — searched: <em>{{ event.query | wordwrap_collapse }}</em>
+      </summary>
+      <div class="search-query">🔍 {{ event.query | wordwrap_collapse }}</div>
+      <ul class="search-results">
+        {% for r in event.results %}
+        <li>
+          <a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title }}</a>
+          <span class="search-result-url">{{ r.url }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </details>
+
+    {% elif event.type in ("plan", "think") %}
     <details class="thought">
       <summary>
         <span style="color: {{ event.color }}">{{ event.speaker }}</span>

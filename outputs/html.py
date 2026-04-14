@@ -97,6 +97,15 @@ class HtmlOutput:
             self._events.append({"type": "think", "speaker": event.speaker,
                                   "color": color, "content": event.content})
 
+        elif event.type == EventType.SEARCH:
+            self._events.append({
+                "type": "search",
+                "speaker": event.speaker,
+                "color": color,
+                "query": event.content,
+                "results": event.metadata.get("results", []),
+            })
+
         elif event.type == EventType.TURN:
             self._events.append({"type": "turn", "speaker": event.speaker,
                                   "color": color, "content": event.content})

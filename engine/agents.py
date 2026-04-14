@@ -2,7 +2,28 @@ import json
 import re
 from openai import OpenAI
 
+from .search import search_web
+
 OLLAMA_BASE_URL = "http://localhost:11434/v1"
+
+_SEARCH_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "search_web",
+        "description": (
+            "Search the web for facts, statistics, or news relevant to your debate argument. "
+            "Prefer specific, targeted queries. Reputable sources such as Wikipedia, government "
+            "sites, academic papers, and established news outlets carry the most weight."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "A specific search query"}
+            },
+            "required": ["query"],
+        },
+    },
+}
 
 
 def _parse_json(text: str) -> dict:
@@ -28,10 +49,93 @@ class Agent:
             config.get("instructions", "").strip(),
         ]))
 
+        self.web_research: bool = config.get("web_research", False)
         self._client = OpenAI(base_url=OLLAMA_BASE_URL, api_key="ollama")
         self._history: list[dict] = [
             {"role": "system", "content": system_prompt}
         ]
+
+    def _tool_chat(self, prompt: str, max_searches: int, on_search=None) -> str:
+        """Run a chat turn with an optional web-search tool loop.
+
+        The model may call search_web up to max_searches times before giving its
+        final text response. Only the original prompt and final response are stored
+        in self._history; intermediate tool-call messages are discarded so history
+        stays clean and compact.
+        """
+        messages = list(self._history) + [{"role": "user", "content": prompt}]
+        last_content = ""
+
+        for _ in range(max_searches + 1):
+            response = self._client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                tools=[_SEARCH_TOOL],
+                tool_choice="auto",
+            )
+            msg = response.choices[0].message
+
+            assistant_entry = {"role": "assistant", "content": msg.content or ""}
+            if msg.tool_calls:
+                assistant_entry["tool_calls"] = [
+                    {
+                        "id": tc.id,
+                        "type": "function",
+                        "function": {"name": tc.function.name, "arguments": tc.function.arguments},
+                    }
+                    for tc in msg.tool_calls
+                ]
+            messages.append(assistant_entry)
+
+            if not msg.tool_calls:
+                last_content = msg.content or ""
+                break
+
+            for tc in msg.tool_calls:
+                try:
+                    args = json.loads(tc.function.arguments)
+                    query = args.get("query", "")
+                except json.JSONDecodeError:
+                    # Gemma occasionally produces truncated tool-call JSON; extract with regex
+                    m = re.search(r'"query"\s*:\s*"([^"]*)', tc.function.arguments)
+                    query = m.group(1).rstrip() if m else ""
+                if not query:
+                    continue
+                results = search_web(query)
+                if on_search:
+                    on_search(query, [{"title": r["title"], "url": r["url"]} for r in results])
+                messages.append({
+                    "role": "tool",
+                    "tool_call_id": tc.id,
+                    "content": json.dumps(results),
+                })
+        else:
+            # Loop exhausted — request a plain-text synthesis
+            messages.append({"role": "user", "content": "Summarise your findings."})
+            response = self._client.chat.completions.create(model=self.model, messages=messages)
+            last_content = response.choices[0].message.content or ""
+
+        self._history.append({"role": "user", "content": prompt})
+        self._history.append({"role": "assistant", "content": last_content})
+        return last_content
+
+    def research(self, topic: str, premise: str = None, on_search=None) -> str:
+        """Search the web for supporting evidence before the debate."""
+        side_line = ""
+        if premise and self.side:
+            label = "FOR" if self.side == "for" else "AGAINST"
+            side_line = f"You are arguing {label} the premise: \"{premise}\"\n\n"
+
+        prompt = (
+            f"The debate topic is: {topic}\n\n"
+            f"{side_line}"
+            "Before planning your argument, use the search_web tool to find relevant "
+            "facts, statistics, and reputable sources that support your position. "
+            "Do 2-3 targeted searches. Prefer Wikipedia, government data, academic "
+            "sources, and established news. After searching, summarise the most useful "
+            "findings and note which sources you found."
+        )
+        return self._tool_chat(prompt, max_searches=3, on_search=on_search)
 
     def plan(self, topic: str) -> str:
         prompt = (
@@ -77,8 +181,19 @@ class Agent:
                 '{"score": 7, "reasoning": "One sentence explaining any change."}\n'
                 "The score must be a whole number between 0 and 10 inclusive."
             )
-        raw = self.chat(prompt, json_mode=True)
-        return _parse_json(raw)
+        for attempt in range(3):
+            if attempt == 0:
+                raw = self.chat(prompt, json_mode=True)
+            else:
+                raw = self.chat(
+                    'That was not valid JSON. Reply with only: {"score": 7, "reasoning": "..."}',
+                    json_mode=True,
+                )
+            try:
+                return _parse_json(raw)
+            except (json.JSONDecodeError, ValueError):
+                continue
+        return {"score": 5, "reasoning": "Score unavailable."}
 
     def _extract_verdict_json(self, names: list[str], confirmed_winner: str | None = None) -> dict:
         """Ask the model to emit a structured verdict dict, retrying on bad output.
@@ -221,19 +336,30 @@ class Agent:
         )
         return self.chat(prompt)
 
-    def think(self, opponent_message: str, final: bool = False) -> str:
+    def think(self, opponent_message: str, final: bool = False, on_search=None) -> str:
         final_note = (
             " This is your final turn — plan a strong closing argument that "
             "summarises your case and lands a decisive point."
             if final else ""
         )
-        prompt = (
-            f"Your opponent just said:\n\n\"{opponent_message}\"\n\n"
-            "Before you respond, privately reflect: What did they get right or wrong? "
-            "How does this shift the argument? How might the audience be reacting? "
-            f"Plan what you'll say next.{final_note} Do not give your debate response yet. "
-            "Write in English only."
+        search_note = (
+            "\n\nYou have access to the search tool. Use it if it would genuinely help — "
+            "for example, to fact-check a claim your opponent just made, verify or challenge "
+            "a source they cited, or find a specific statistic to back your next point. "
+            "Do not search for the sake of it — if rhetoric, logic, or a point you already "
+            "have is the stronger move, make that instead."
+            if self.web_research else ""
         )
+        prompt = (
+            f"Your opponent just said:\n\n\"{opponent_message}\""
+            f"{search_note}\n\n"
+            "Privately reflect: what did they get right or wrong? "
+            "How does this shift the argument? How might the audience be reacting? "
+            f"Plan what you'll say next.{final_note} "
+            "Do not give your debate response yet. Write in English only."
+        )
+        if self.web_research:
+            return self._tool_chat(prompt, max_searches=2, on_search=on_search)
         return self.chat(prompt)
 
     def respond(self, final: bool = False) -> str:
@@ -248,6 +374,12 @@ class Agent:
                 "Now give your actual debate response, in character. "
                 "You must directly engage with the specific point your opponent just made — "
                 "do not simply repeat a point you have already made earlier in this debate. "
+            )
+        if self.web_research:
+            instruction += (
+                "Where it strengthens your argument, cite specific sources by name "
+                "(for example: 'According to Wikipedia...', 'Ofgem data shows...', "
+                "'The ONS reports...') — the judges reward well-evidenced claims. "
             )
         return self.chat(
             instruction +
